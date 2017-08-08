@@ -17,7 +17,8 @@ from inputManipulation import applyManipulation
 
 class decisionTree:
 
-    def __init__(self, model, actions, image):
+    def __init__(self, model, actions, image, string):
+        self.string = string
         self.model = model
         self.image = image
         self.imagesOnTree = {}
@@ -102,12 +103,12 @@ class decisionTree:
             if self.tree[node] == []: 
                 if newClass == origClass: 
                     print("outputTree: it is expected that the leaf nodes have class change.")
-                path0="%s/%s_decisionTree_%s_leaf_%s_%s.png"%(directory_pic_string,startIndexOfImage,node,dataBasics.LABELS(int(newClass)),newConfident)
+                path0="%s/%s_%sTree_%s_leaf_%s_%s.png"%(directory_pic_string,startIndexOfImage,self.string,node,dataBasics.LABELS(int(newClass)),newConfident)
             else: 
                 nodeStr = (zip(*(self.tree[node])))[1]
                 if newClass != origClass and newConfident > effectiveConfidenceWhenChanging: 
                     print("outputTree: it is expected that the internal nodes have the same class.")
-                path0="%s/%s_decisionTree_%s_%s_%s_%s.png"%(directory_pic_string,startIndexOfImage,node,str(nodeStr),dataBasics.LABELS(int(newClass)),newConfident)
+                path0="%s/%s_%sTree_%s_%s_%s_%s.png"%(directory_pic_string,startIndexOfImage,self.string,node,str(nodeStr),dataBasics.LABELS(int(newClass)),newConfident)
             dataBasics.save(-1,image,path0)
         
     def getNodes(self,activeNodes):
@@ -135,7 +136,7 @@ class decisionTree:
         for node in self.tree.keys():
             for (act, nextNode) in self.tree[node]: 
                 graph.edge('%s'%node, '%s'%nextNode)
-        filename = '%s/%s_decisionTree.gv'%(directory_pic_string,startIndexOfImage)
+        filename = '%s/%s_%sTree.gv'%(directory_pic_string,startIndexOfImage,self.string)
         graph.render(filename)
         
         print("please find the decision tree from file: %s"%(filename))

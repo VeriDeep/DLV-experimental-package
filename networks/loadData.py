@@ -20,7 +20,7 @@ from pylab import *
 from keras.models import Model, Sequential, model_from_json
 from keras.layers import Input, Dense
 import keras.optimizers
-
+from keras import backend as K
 
 # visualisation
 #from keras.utils.visualize_util import plot
@@ -69,7 +69,10 @@ def loadData():
         print("Training finished!")
     
         # save model
-        ae =  "_normal" # "transferability" #  "_autoencoder"  #
+        if K.backend() == 'tensorflow':
+            ae = "_tensorflow"
+        else: 
+            ae = "_theano" # "transferability" #  "_autoencoder"  #
         json_string = model.to_json()
         open('%s/mnist%s.json'%(directory_model_string,ae), 'w').write(json_string)
         model.save_weights('%s/mnist%s.h5'%(directory_model_string,ae), overwrite=True)
@@ -78,8 +81,12 @@ def loadData():
         
     elif whichMode == "read" and dataset == "mnist" and trainingModel == "normal": 
         print("Start loading model ... ")
-        ae = "" # "transferability" #  "_autoencoder"  # "_normal"
+        if K.backend() == 'tensorflow': 
+            ae = "_tensorflow"
+        else: 
+            ae = "_theano" # "transferability" #  "_autoencoder"  #
         model = NN.read_model_from_file('%s/mnist%s.mat'%(directory_model_string,ae),'%s/mnist%s.json'%(directory_model_string,ae))
+        #print model.get_config()
         print("Model loaded!")
         #test(model)
         

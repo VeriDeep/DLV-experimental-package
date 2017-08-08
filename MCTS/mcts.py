@@ -23,6 +23,8 @@ from basics import mergeTwoDicts, diffPercent, euclideanDistance, l1Distance, nu
 from decisionTree import decisionTree
 from initialisePixelSets import initialisePixelSets
 from initialiseSquares import initialiseSquares
+from initialiseSiftKeypoints import initialiseSiftKeypoints
+
 from re_training import re_training
 from analyseAdv import analyseAdv
 from superPixels import superPixel_slic
@@ -104,12 +106,14 @@ class mcts:
             allChildren = initialiseSquares(self.autoencoder,self.activations,[])
         elif self.manipulationType == "slic": 
             allChildren = superPixel_slic(self.activations)
+        elif self.manipulationType == "sift": 
+            allChildren = initialiseSiftKeypoints(self.autoencoder,self.activations,[])
             
         for i in range(len(allChildren)): 
             self.actions[i] = allChildren[i] 
         print "%s actions have been initialised. "%(len(self.actions))
         # initialise decision tree
-        self.decisionTree = decisionTree(self.model, self.actions,self.activations)
+        self.decisionTree = decisionTree(self.model, self.actions,self.activations, "decision")
         
     def initialiseLeafNode(self,index,parentIndex,newSpans,newNumSpans):
         nprint("initialising a leaf node %s from the node %s"%(index,parentIndex))

@@ -90,10 +90,10 @@ def usual_configuration(dataset):
         startLayer = -1
 
         ## control by distance
-        controlledSearch = ("L1",2000.00)
+        controlledSearch = ("L1",0.5)
         #controlledSearch = ("L1",0.05)
         
-        effectiveConfidenceWhenChanging = 0.1
+        effectiveConfidenceWhenChanging = 0.0
         
         # MCTS_level_maximal_time
         MCTS_level_maximal_time = 30

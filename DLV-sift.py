@@ -18,7 +18,6 @@ import random
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 
-
 from loadData import loadData 
 
 from configuration import *
@@ -42,15 +41,9 @@ import theano.tensor as T
         
 def main():
 
-    re-training()
-    # explaination()
-
-def explaination():
-
     model = loadData()
     
     if whichMode == "train": return
-    
     if trainingModel == "autoencoder":
         (model,autoencoder) = model
         if startLayer == -1: autoencoder = model
@@ -58,126 +51,23 @@ def explaination():
     
     # initialise a dataCollection instance
     phase = "firstRound"
-    dc = dataCollection("%s_%s_%s"%(startIndexOfImage,dataProcessingBatchNum, controlledSearch))
-    # initialise a re_training instance
-    reTrain = re_training(model, NN.getImage(model,startIndexOfImage).shape)
-    
-    #originalScore = reTrain.evaluateWithOriginalModel()
-    #dc.addComment("original test score: %s\n\n"%originalScore)
+
     # finding adversarial examples from original model
-    succNum = 0
-    for whichIndex in range(startIndexOfImage,startIndexOfImage + dataProcessingBatchNum):
-        print "\n\nprocessing input of index %s in the dataset: " %(str(whichIndex))
-        succ = handleOne(model,autoencoder,dc,reTrain,phase,whichIndex,firstRound_manipulations[0])
-        if succ == True: succNum += 1
-    dc.addSuccPercent(succNum/float(dataProcessingBatchNum))
-            
-    # output statistics for original model
-    print("Please refer to the file %s for statistics."%(dc.fileName))
-    dc.provideDetails()
-    dc.summarise()
-    dc.close()
+    handleOne(model,autoencoder,phase,startIndexOfImage,dataProcessingBatchNum,firstRound_manipulations[0])
 
 
-
-def re-training():
-
-
-    print 'Number of arguments:', len(sys.argv), 'arguments.'
-    print 'Argument List:', str(sys.argv)
-
-    for firstRound_manipulation in firstRound_manipulations: 
-        for sndRound_manipulation in sndRound_manipulations: 
-            reTraining_experiment(firstRound_manipulation,sndRound_manipulation)
-            
-def reTraining_experiment(firstRound_manipulation,sndRound_manipulation):
-
-    model = loadData()
-    
-    if whichMode == "train": return
-    
-    if trainingModel == "autoencoder":
-        (model,autoencoder) = model
-        if startLayer == -1: autoencoder = model
-    else: autoencoder = model
-    
-    # initialise a dataCollection instance
-    phase = "firstRound"
-    dc = dataCollection("%s_%s_%s_%s_%s_firstRound"%(startIndexOfImage,dataProcessingBatchNum, controlledSearch, firstRound_manipulation, sndRound_manipulation))
-    # initialise a re_training instance
-    reTrain = re_training(model, NN.getImage(model,startIndexOfImage).shape)
-    
-    originalScore = reTrain.evaluateWithOriginalModel()
-    dc.addComment("original test score: %s\n\n"%originalScore)
-    # finding adversarial examples from original model
-    succNum = 0
-    for whichIndex in range(startIndexOfImage,startIndexOfImage + dataProcessingBatchNum):
-        print "\n\nprocessing input of index %s in the dataset: " %(str(whichIndex))
-        succ = handleOne(model,autoencoder,dc,reTrain,phase,whichIndex,firstRound_manipulation)
-        if succ == True: succNum += 1
-    dc.addSuccPercent(succNum/float(dataProcessingBatchNum))
-            
-    # output statistics for original model
-    print("Please refer to the file %s for statistics."%(dc.fileName))
-    dc.provideDetails()
-    dc.summarise()
-    dc.close()
-    
-    if reTrain.numberOfNewExamples() == 0: 
-        print "failed to find new examples for further training"
-        return
-    else: 
-        print "ready for re-training ... "
-    
-    # initialise a dataCollection instance
-    phase = "sndRound"
-    dc = dataCollection("%s_%s_%s_%s_%s_secondRound"%(startIndexOfImage,dataProcessingBatchNum, controlledSearch, firstRound_manipulation, sndRound_manipulation))
-    dc.addComment("%s new examples are founded.\n\n"%(reTrain.numberOfNewExamples()))
-    # update model with new data
-    reTrain.setReTrainedModelName("%s_%s_%s_%s"%(startIndexOfImage,dataProcessingBatchNum, controlledSearch,firstRound_manipulation))
-    model = reTrain.training()
-    
-    updatedScore = reTrain.evaluateWithUpdatedModel()
-    dc.addComment("updated test score: %s\n\n"%updatedScore)
-    # finding adversarial examples from updated model
-    succNum = 0
-    for whichIndex in range(startIndexOfImage,startIndexOfImage + dataProcessingBatchNum):
-        print "\n\nprocessing input of index %s in the dataset: " %(str(whichIndex))
-        succ = handleOne(model,autoencoder,dc,reTrain,phase,whichIndex,sndRound_manipulation)
-        if succ == True: succNum += 1
-    dc.addSuccPercent(succNum/float(dataProcessingBatchNum))
-
-    # output statistics for updated model
-    print("Please refer to the file %s for statistics."%(dc.fileName))
-    dc.provideDetails()
-    dc.summarise()
-    dc.close()
-
-
-    
-      
 ###########################################################################
 #
 #  checking with MCTS
 #
 ############################################################################
 
-def handleOne(model,autoencoder,dc,reTrain,phase,startIndexOfImage,manipulationType):
+def handleOne(model,autoencoder,phase,startIndexOfImage,dataProcessingBatchNum,manipulationType):
         
-    # visualisation, switch on if needed
-    #visualization(model,501)
-    #return
-
     # get an image to interpolate
     global np
     image = NN.getImage(model,startIndexOfImage)
     print("the shape of the input is "+ str(image.shape))
-    
-    #superPixel_slic(image)
-    #return
-            
-    dc.initialiseIndex(startIndexOfImage)    
-    dc.initialiseLayer(startLayer)
             
     # keep information for the original image
     (originalClass,originalConfident) = NN.predictWithImage(model,image)
@@ -202,7 +92,6 @@ def handleOne(model,autoencoder,dc,reTrain,phase,startIndexOfImage,manipulationT
     
     # initialise a search tree
     st = mcts(model,autoencoder,image,activations,startLayer)
-    #st = mcts_geo(model,autoencoder,image,activations,startLayer)
     if startLayer > -1: 
         visualizeOneLayer(model,image,startLayer)
         st.visualizationMCTS()
@@ -296,18 +185,13 @@ def handleOne(model,autoencoder,dc,reTrain,phase,startIndexOfImage,manipulationT
         print "L1 distance %s"%(l1dist)
         print "manipulated percentage distance %s"%(percent)
         print "class is changed into %s with confidence %s\n"%(newClassStr, newConfident)
-        dc.addEuclideanDistance(eudist)
-        dc.addl1Distance(l1dist)
-        dc.addManipulationPercentage(percent)
     else: 
         print "failed to find an adversary image within prespecified bounded computational resource. "
                 
     newXtrain,newYtrain = st.re_training.returnData()
-    reTrain.addData(newXtrain,newYtrain)
     st.destructor()
                 
     runningTime = time.time() - start_time   
-    dc.addRunningTime(runningTime)
 
     return re
             

@@ -28,6 +28,7 @@ import mnist as mm
 batch_size = 128
 nb_classes = 10
 nb_epoch = 12
+img_channels = 1
 
 # input image dimensions
 img_rows, img_cols = 28, 28
@@ -37,6 +38,9 @@ nb_filters = 32
 nb_pool = 2
 # convolution kernel size
 nb_conv = 3
+
+
+
 
 def read_dataset():
 
@@ -57,8 +61,12 @@ def read_dataset():
     # the data, shuffled and split between train and test sets
     (X_train, y_train), (X_test, y_test) = mnist.load_data()
 
-    X_train = X_train.reshape(X_train.shape[0], 1, img_rows, img_cols)
-    X_test = X_test.reshape(X_test.shape[0], 1, img_rows, img_cols)
+    if K.backend() == 'tensorflow':
+        X_train = X_train.reshape(X_train.shape[0], img_rows, img_cols, img_channels)
+        X_test = X_test.reshape(X_test.shape[0], img_rows, img_cols, img_channels)
+    else:
+        X_train = X_train.reshape(X_train.shape[0], img_channels, img_rows, img_cols)
+        X_test = X_test.reshape(X_test.shape[0], img_channels, img_rows, img_cols)
     X_train = X_train.astype('float32')
     X_test = X_test.astype('float32')
     X_train /= 255
@@ -78,11 +86,19 @@ def build_model():
     define neural network model
     """
     
+    K.set_learning_phase(0)
+    
+    if K.backend() == 'tensorflow': 
+        inputShape = (img_rows,img_cols,img_channels)
+    else: 
+        inputShape = (img_channels,img_rows,img_cols)
+
+    
     model = Sequential()
 
     model.add(Convolution2D(nb_filters, nb_conv, nb_conv,
                             border_mode='valid',
-                            input_shape=(1, img_rows, img_cols)))
+                            input_shape=inputShape))
     model.add(Activation('relu'))
     model.add(Convolution2D(nb_filters, nb_conv, nb_conv))
     model.add(Activation('relu'))
@@ -111,11 +127,16 @@ def build_model_and_autoencoder(layerToCut):
     
     """
 
+    if K.backend() == 'tensorflow': 
+        inputShape = (img_rows,img_cols,img_channels)
+    else: 
+        inputShape = (img_channels,img_rows,img_cols)
+
     model = Sequential()
 
     model.add(Convolution2D(32, nb_conv, nb_conv,
                             border_mode='valid',
-                            input_shape=(1, img_rows, img_cols),
+                            input_shape=inputShape,
                             trainable = False))
     if layerToCut >= 1: 
         model.add(Activation('relu'))
@@ -195,13 +216,19 @@ def dynamic_build_model(startLayer,inputShape):
     """
     define neural network model
     """
+    
+    if K.backend() == 'tensorflow': 
+        inputShape = (img_rows,img_cols,img_channels)
+    else: 
+        inputShape = (img_channels,img_rows,img_cols)
+    
     firstLayerDone = False
     model = Sequential()
     
     if startLayer == 0 :
         model.add(Convolution2D(nb_filters, nb_conv, nb_conv,
                                 border_mode='valid',
-                                input_shape=(1, img_rows, img_cols)))
+                                input_shape=inputShape))
     else: 
         startLayer -= 1
         
@@ -320,14 +347,19 @@ def read_model_from_file(weightFile,modelFile):
     model = build_model()
     model.summary()
     
-    weights = sio.loadmat(weightFile)
-    model = model_from_json(open(modelFile).read())
-    for (idx,lvl) in [(1,0),(2,2),(3,7),(4,10)]:
+    #print (model.get_config())
         
-        weight_1 = 2 * idx - 2
-        weight_2 = 2 * idx - 1
-        model.layers[lvl].set_weights([weights['weights'][0, weight_1], weights['weights'][0, weight_2].flatten()])
-
+    if K.backend() == 'tensorflow': 
+        model.load_weights('networks/mnist/mnist_tensorflow.h5')
+    else: 
+        weights = sio.loadmat(weightFile)
+        model = model_from_json(open(modelFile).read())
+        for (idx,lvl) in [(1,0),(2,2),(3,7),(4,10)]:
+        
+            weight_1 = 2 * idx - 2
+            weight_2 = 2 * idx - 1
+            model.layers[lvl].set_weights([weights['weights'][0, weight_1], weights['weights'][0, weight_2].flatten()])
+    
     return model
     
 def read_autoencoder_from_file(weightFile,modelFile,layerToCut):
@@ -406,18 +438,44 @@ def dynamic_read_model_from_file(cutmodel,weightFile,modelFile,startLayer):
 def getImage(model,n_in_tests):
 
     (X_train, y_train), (X_test, y_test) = mnist.load_data()
-    X_test = X_test.reshape(X_test.shape[0], 1, img_rows, img_cols)
+    if K.backend() == 'tensorflow': 
+        X_test = X_test.reshape(X_test.shape[0], img_rows, img_cols, 1)
+    else: 
+        X_test = X_test.reshape(X_test.shape[0], 1, img_rows, img_cols)
     X_test = X_test.astype('float32')
     X_test /= 255
     
     Y_test = np_utils.to_categorical(y_test, nb_classes)
     image = X_test[n_in_tests:n_in_tests+1]
-    return np.squeeze(image)
+    if K.backend() == 'tensorflow':
+        return image[0]
+    else: 
+        return np.squeeze(image)
+        
+def getLabel(model,n_in_tests):
+
+    (X_train, y_train), (X_test, y_test) = mnist.load_data()
+    if K.backend() == 'tensorflow': 
+        X_test = X_test.reshape(X_test.shape[0], img_rows, img_cols, 1)
+    else: 
+        X_test = X_test.reshape(X_test.shape[0], 1, img_rows, img_cols)
+    X_test = X_test.astype('float32')
+    X_test /= 255
+    
+    Y_test = np_utils.to_categorical(y_test, nb_classes)
+    image = Y_test[n_in_tests:n_in_tests+1]
+    if K.backend() == 'tensorflow':
+        return image[0]
+    else: 
+        return np.squeeze(image)
     
 def getImages(model,n_in_tests1,n_in_tests2):
 
     (X_train, y_train), (X_test, y_test) = mnist.load_data()
-    X_test = X_test.reshape(X_test.shape[0], 1, img_rows, img_cols)
+    if K.backend() == 'tensorflow': 
+        X_test = X_test.reshape(X_test.shape[0], img_rows, img_cols, 1)
+    else: 
+        X_test = X_test.reshape(X_test.shape[0], 1, img_rows, img_cols)
     X_test = X_test.astype('float32')
     X_test /= 255
     
@@ -469,6 +527,9 @@ def predictWithImage(model,newInput):
         newInput2 = np.expand_dims(np.expand_dims(newInput, axis=0), axis=0)
     else: 
         newInput2 = np.expand_dims(newInput, axis=0)
+    #newInput2.astype('float32')
+    #print(newInput2.shape)
+    #print(model.get_config())
     predictValue = model.predict(newInput2)
     newClass = np.argmax(np.ravel(predictValue))
     confident = np.amax(np.ravel(predictValue))
