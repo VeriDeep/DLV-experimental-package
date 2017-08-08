@@ -292,7 +292,7 @@ class mcts:
 
         if newClass != self.originalClass and newConfident > effectiveConfidenceWhenChanging:
             # and newClass == dataBasics.next_index(self.originalClass,self.originalClass): 
-            nprint("sampling a path ends in a terminal node with depth %s... "%depth)
+            print("sampling a path ends in a terminal node with depth %s... "%depth)
             
             (spansPath,numSpansPath) = self.scrutinizePath(spansPath,numSpansPath,newClass)
             

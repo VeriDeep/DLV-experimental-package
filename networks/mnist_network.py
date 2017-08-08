@@ -86,7 +86,8 @@ def build_model():
     define neural network model
     """
     
-    K.set_learning_phase(0)
+    if K.backend() == 'tensorflow': 
+        K.set_learning_phase(1)
     
     if K.backend() == 'tensorflow': 
         inputShape = (img_rows,img_cols,img_channels)

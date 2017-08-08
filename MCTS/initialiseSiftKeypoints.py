@@ -5,6 +5,7 @@ author: Xiaowei Huang
 
 """
 
+import sys
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import cv2
@@ -27,7 +28,8 @@ from configuration import *
 def initialiseSiftKeypoints(model,image,manipulated):
 
     image1 = copy.deepcopy(image)
-    image1 = (image1*255).transpose(1, 2, 0)
+    if len(image1.shape) > 2: 
+        image1 = (image1*255).transpose(1, 2, 0)
     image1=image1.astype(np.uint8)
     kp, des = SIFT_Filtered(image1)
     
@@ -68,6 +70,10 @@ def SIFT_Filtered(image, threshold=0.0):
     #print kp[0], kp[0].response, kp[0].pt, kp[0].class_id, kp[0].octave, kp[0].size, len(des[0])
 
     #FILTER RESPONSES:
+    
+    if len(kp) == 0: 
+        print("There is no keypont found in the image. \nPlease try approaches other than SIFT in processing this image. ")
+        sys.exit()
     
     actions = sorted(zip(kp,des), key=lambda x: x[0].response)
 

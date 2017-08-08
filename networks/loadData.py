@@ -51,14 +51,12 @@ def loadData():
         X_train_transferability = X_train[1:150]
         Y_train_transferability = Y_train[1:150]
         nb_epoch_transferability = 5
-        
-        #print X_train.shape, Y_train.shape, Y_train[0]
-
+    
         print "Building network model ......"
         model = NN.build_model()
 
         start_time = time.time()
-        model.fit(X_train, Y_train, batch_size=batch_size, nb_epoch=nb_epoch,
+        model.fit(X_train, Y_train, batch_size=nb_epoch, nb_epoch=nb_epoch,
                   verbose=1, validation_data=(X_test, Y_test))
         #model.fit(X_train_transferability, Y_train_transferability, batch_size=batch_size, nb_epoch=nb_epoch_transferability,
         #          verbose=1, validation_data=(X_test, Y_test))
