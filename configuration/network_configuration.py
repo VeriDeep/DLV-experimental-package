@@ -73,7 +73,7 @@ def network_parameters(dataset):
         directory_statistics_string = makedirectory("data/imageNet_statistics")
         directory_pic_string = makedirectory("data/imageNet_pic")
 
-        featureDims = 5
+        featureDims = 255
         span = 125
         numSpan = 1
 

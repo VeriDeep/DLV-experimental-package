@@ -78,6 +78,15 @@ class mcts:
         self.decisionTree = 0
         self.re_training = re_training(model,self.image.shape)
         
+        # temporary variables for sampling 
+        self.spansPath = []
+        self.numSpansPath = [] 
+        self.depth = 0
+        self.availableActionIDs = []
+        self.usedActionIDs = [] 
+        self.accDims = [] 
+        self.d =0
+        
     def predictWithActivations(self,activations):
         if self.layer > -1: 
             output = np.squeeze(self.autoencoder.predict(np.expand_dims(activations,axis=0)))
@@ -248,26 +257,33 @@ class mcts:
                 
     def getUsefulPixels(self,accDims,d): 
         import operator
-        sorted_accDims = sorted(accDims, key=operator.itemgetter(1), reverse=True)
+        sorted_accDims = sorted(self.accDims, key=operator.itemgetter(1), reverse=True)
         needed_accDims = sorted_accDims[:d-1]
         self.addUsefulPixels([x for (x,y) in needed_accDims])
             
     # start random sampling and return the Euclidean value as the value
     def sampling(self,index,availableActions):
-        nprint("start sampling node %s"%(index))
+        print("start sampling node %s"%(index))
         availableActions2 = copy.deepcopy(availableActions)
         availableActions2.pop(self.indexToActionID[index], None)
         sampleValues = []
         i = 0
         for i in range(MCTS_multi_samples): 
-            (childTerminated, val) = self.sampleNext(self.spans[index],self.numSpans[index],0,availableActions2.keys(),[],[],2)
+            self.spansPath = self.spans[index]
+            self.numSpansPath = self.numSpans[index] 
+            self.depth = 0
+            self.availableActionIDs = availableActions2.keys()
+            self.usedActionIDs = [] 
+            self.accDims = [] 
+            self.d = 2
+            (childTerminated, val) = self.sampleNext()
             sampleValues.append(val)
             #if childTerminated == True: break
             i += 1
         return (childTerminated, max(sampleValues))
     
-    def sampleNext(self,spansPath,numSpansPath,depth,availableActionIDs,usedActionIDs,accDims,d): 
-        activations1 = applyManipulation(self.activations,spansPath,numSpansPath)
+    def sampleNext(self): 
+        activations1 = applyManipulation(self.activations,self.spansPath,self.numSpansPath)
         (newClass,newConfident) = self.predictWithActivations(activations1)
         (distMethod,distVal) = controlledSearch
         if distMethod == "euclidean": 
@@ -287,47 +303,54 @@ class mcts:
             termValue = 0.0
             termByDist = dist < self.activations.size - distVal
 
-        #if termByDist == False and newConfident < 0.5 and depth <= 3: 
+        #if termByDist == False and newConfident < 0.5 and self.depth <= 3: 
         #    termByDist = True
 
         if newClass != self.originalClass and newConfident > effectiveConfidenceWhenChanging:
             # and newClass == dataBasics.next_index(self.originalClass,self.originalClass): 
-            print("sampling a path ends in a terminal node with depth %s... "%depth)
+            print("sampling a path ends in a terminal node with self.depth %s... "%self.depth)
             
-            (spansPath,numSpansPath) = self.scrutinizePath(spansPath,numSpansPath,newClass)
+            (self.spansPath,self.numSpansPath) = self.scrutinizePath(self.spansPath,self.numSpansPath,newClass)
             
-            self.decisionTree.addOnePath(dist,spansPath,numSpansPath)
+            self.decisionTree.addOnePath(dist,self.spansPath,self.numSpansPath)
             self.numAdv += 1
             self.analyseAdv.addAdv(activations1)
-            self.getUsefulPixels(accDims,d)
+            self.getUsefulPixels(self.accDims,self.d)
                 
             self.re_training.addDatum(activations1,self.originalClass)
-            if self.bestCase[0] < dist: self.bestCase = (dist,spansPath,numSpansPath)
-            return (depth == 0, dist)
+            if self.bestCase[0] < dist: self.bestCase = (dist,self.spansPath,self.numSpansPath)
+            return (self.depth == 0, dist)
         elif termByDist == True: 
-            nprint("sampling a path ends by controlled search with depth %s ... "%depth)
+            nprint("sampling a path ends by controlled search with self.depth %s ... "%self.depth)
             self.re_training.addDatum(activations1,self.originalClass)
-            return (depth == 0, termValue)
-        elif list(set(availableActionIDs)-set(usedActionIDs)) == []: 
-            nprint("sampling a path ends with depth %s because no more actions can be taken ... "%depth)
-            return (depth == 0, termValue)        
+            return (self.depth == 0, termValue)
+        elif list(set(self.availableActionIDs)-set(self.usedActionIDs)) == []: 
+            nprint("sampling a path ends with self.depth %s because no more actions can be taken ... "%self.depth)
+            return (self.depth == 0, termValue)        
         else: 
             #print("continue sampling node ... ")
-            #allChildren = initialisePixelSets(self.model,self.activations,spansPath.keys())
-            randomActionIndex = random.choice(list(set(availableActionIDs)-set(usedActionIDs))) #random.randint(0, len(allChildren)-1)
+            #allChildren = initialisePixelSets(self.model,self.activations,self.spansPath.keys())
+            randomActionIndex = random.choice(list(set(self.availableActionIDs)-set(self.usedActionIDs))) #random.randint(0, len(allChildren)-1)
             (span,numSpan,_) = self.actions[randomActionIndex]
-            availableActionIDs.remove(randomActionIndex)
-            usedActionIDs.append(randomActionIndex)
-            newSpanPath = self.mergeSpan(spansPath,span)
-            newNumSpanPath = self.mergeNumSpan(numSpansPath,numSpan)
+            self.availableActionIDs.remove(randomActionIndex)
+            self.usedActionIDs.append(randomActionIndex)
+            newSpanPath = self.mergeSpan(self.spansPath,span)
+            newNumSpanPath = self.mergeNumSpan(self.numSpansPath,numSpan)
             activations2 = applyManipulation(self.activations,newSpanPath,newNumSpanPath)
             (newClass2,newConfident2) = self.predictWithActivations(activations2)
             confGap2 = newConfident - newConfident2
             if newClass2 == newClass: 
-                accDims.append((randomActionIndex,confGap2))
-            else: accDims.append((randomActionIndex,1.0))
+                self.accDims.append((randomActionIndex,confGap2))
+            else: self.accDims.append((randomActionIndex,1.0))
 
-            return self.sampleNext(newSpanPath,newNumSpanPath,depth+1,availableActionIDs,usedActionIDs,accDims,d)
+            self.spansPath = newSpanPath
+            self.numSpansPath = newNumSpanPath
+            self.depth = self.depth+1
+            self.availableActionIDs = self.availableActionIDs
+            self.usedActionIDs = self.usedActionIDs 
+            self.accDims = self.accDims
+            self.d = self.d
+            return self.sampleNext()
             
     def scrutinizePath(self,spanPath,numSpanPath,changedClass): 
         lastSpanPath = copy.deepcopy(spanPath)
