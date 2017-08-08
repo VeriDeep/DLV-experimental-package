@@ -68,6 +68,7 @@ def findSquareSize(num, imageSize):
         if i**2 < num and (i+1)**2 >= num: 
             return i+1
         i += 1
+    return 1
     
 def findUpperLeftPoints(squareSize, imageSize): 
     i = 0

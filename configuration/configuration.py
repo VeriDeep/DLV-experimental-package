@@ -37,7 +37,7 @@ trainingModel = "normal"
 dataProcessingBatchNum = 10
 
 
-firstRound_manipulations = ["sift", "squares", "slic", "pixelSets"]
+firstRound_manipulations = ["sift", "squares", "pixelSets", "slic"]
 sndRound_manipulations = ["squares", "pixelSets", "slic"]
 
 
