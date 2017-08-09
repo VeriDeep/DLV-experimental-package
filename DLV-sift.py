@@ -48,12 +48,10 @@ def main():
         (model,autoencoder) = model
         if startLayer == -1: autoencoder = model
     else: autoencoder = model
-    
-    # initialise a dataCollection instance
-    phase = "firstRound"
 
     # finding adversarial examples from original model
-    handleOne(model,autoencoder,phase,startIndexOfImage,dataProcessingBatchNum,firstRound_manipulations[0])
+    for i in range(dataProcessingBatchNum): 
+        handleOne(model,autoencoder,startIndexOfImage+i,manipulations[0])
 
 
 ###########################################################################
@@ -62,7 +60,7 @@ def main():
 #
 ############################################################################
 
-def handleOne(model,autoencoder,phase,startIndexOfImage,dataProcessingBatchNum,manipulationType):
+def handleOne(model,autoencoder,startIndexOfImage,manipulationType):
         
     # get an image to interpolate
     global np
@@ -156,7 +154,7 @@ def handleOne(model,autoencoder,phase,startIndexOfImage,dataProcessingBatchNum,m
     re = newClass != originalClass
                 
     if re == True:     
-        path0="%s/%s_%s_%s_%s_modified_into_%s_with_confidence_%s.png"%(directory_pic_string,startIndexOfImage,phase,manipulationType, origClassStr,newClassStr,newConfident)
+        path0="%s/%s_%s_%s_modified_into_%s_with_confidence_%s.png"%(directory_pic_string,startIndexOfImage,manipulationType, origClassStr,newClassStr,newConfident)
         dataBasics.save(-1,image1,path0)
         path0="%s/%s_diff.png"%(directory_pic_string,startIndexOfImage)
         dataBasics.save(-1,np.subtract(image,image1),path0)

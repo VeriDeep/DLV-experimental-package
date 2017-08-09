@@ -18,11 +18,11 @@ from keras.utils import np_utils
 
 # for mnist
 from keras.datasets import mnist
-
+import tensorflow as tf
 
 #
-
 import mnist as mm
+
 
 
 batch_size = 128
@@ -81,18 +81,20 @@ def read_dataset():
     
     return (X_train,Y_train,X_test,Y_test, batch_size, nb_epoch)
 
-def build_model():
+def build_model(whichMode = "train"):
     """
     define neural network model
     """
     
     if K.backend() == 'tensorflow': 
-        K.set_learning_phase(1)
+        K.set_learning_phase(0)
     
     if K.backend() == 'tensorflow': 
         inputShape = (img_rows,img_cols,img_channels)
     else: 
         inputShape = (img_channels,img_rows,img_cols)
+
+
 
     
     model = Sequential()
@@ -112,10 +114,13 @@ def build_model():
     model.add(Dropout(0.5))
     model.add(Dense(nb_classes))
     model.add(Activation('softmax'))
+    
 
-    model.compile(loss='categorical_crossentropy',
-                  optimizer='adadelta',
-                  metrics=['accuracy'])
+    if whichMode != "read": 
+        model.compile(loss='categorical_crossentropy',
+                      optimizer='adadelta',
+                      metrics=['accuracy'])
+                  
 
     return model
     
@@ -345,9 +350,10 @@ def read_model_from_file(weightFile,modelFile):
     :return: network model
     """
     
-    model = build_model()
+    model = build_model(whichMode = "read")
     model.summary()
-    
+
+
     #print (model.get_config())
         
     if K.backend() == 'tensorflow': 

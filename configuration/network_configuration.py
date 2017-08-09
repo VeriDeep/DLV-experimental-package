@@ -49,7 +49,7 @@ def network_parameters(dataset):
         directory_statistics_string = makedirectory("data/cifar10_statistics")
         directory_pic_string = makedirectory("data/cifar10_pic")
  
-        featureDims = 1
+        featureDims = 9
         span = 255/float(255)
         numSpan = 1
         

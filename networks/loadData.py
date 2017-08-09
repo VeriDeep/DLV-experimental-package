@@ -21,6 +21,7 @@ from keras.models import Model, Sequential, model_from_json
 from keras.layers import Input, Dense
 import keras.optimizers
 from keras import backend as K
+import tensorflow as tf
 
 # visualisation
 #from keras.utils.visualize_util import plot

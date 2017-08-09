@@ -67,7 +67,7 @@ def SIFT_Filtered(image, threshold=0.0):
     sift = cv2.SIFT() # cv2.xfeatures2d.SIFT_create()
     kp, des = sift.detectAndCompute(image,None)
         
-    print kp[0], kp[0].response, kp[0].pt, kp[0].class_id, kp[0].octave, kp[0].size, len(des[0])
+    #print kp[0], kp[0].response, kp[0].pt, kp[0].class_id, kp[0].octave, kp[0].size, len(des[0])
 
     #FILTER RESPONSES:
     

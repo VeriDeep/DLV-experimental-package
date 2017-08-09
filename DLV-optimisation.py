@@ -47,35 +47,35 @@ import tensorflow as tf
 def main():
 
     with tf.Session() as sess:
-
-        model = loadData()
     
+        model = loadData()
+            
         if whichMode == "train": return
         if trainingModel == "autoencoder":
             (model,autoencoder) = model
             if startLayer == -1: autoencoder = model
         else: autoencoder = model
     
-    
         images = []
         labels = []
     
         for i in range(dataProcessingBatchNum): 
     
-            imageIndex = startIndexOfImage+i
+            imageIndex = startIndexOfImage + i
     
-            image = NN.getImage(model,imageIndex)
+            image = NN.getImage(model,imageIndex) 
             label = NN.getLabel(model,imageIndex)
     
             # keep information for the original image
             (originalClass,originalConfident) = NN.predictWithImage(model,image)
             origClassStr = dataBasics.LABELS(int(originalClass))
             path0="%s/%s_original_as_%s_with_confidence_%s.png"%(directory_pic_string,imageIndex,origClassStr,originalConfident)
-            dataBasics.save(-1,np.squeeze(image), path0)
+            dataBasics.save(-1, np.squeeze(image), path0)
         
-            images.append(image)
+            images.append(image - 0.5)
             labels.append(label)
-    
+            
+        end_vars = tf.global_variables()
         test_attack(sess,model,np.array(images),np.array(labels))
     
     return

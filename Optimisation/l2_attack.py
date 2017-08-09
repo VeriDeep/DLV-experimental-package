@@ -60,29 +60,33 @@ class CarliniL2:
 
         self.repeat = binary_search_steps >= 10
 
-        shape = (batch_size,image_size,image_size,num_channels)
+        self.shape = (batch_size,image_size,image_size,num_channels)
+        print("number of elements: %s"%(batch_size*image_size*image_size*num_channels))
         
         # the variable we're going to optimize over
-        modifier = tf.Variable(np.zeros(shape,dtype=np.float32))
+        self.modifier = tf.Variable(np.zeros(self.shape,dtype=np.float32),name='modifier')
 
         # these are variables to be more efficient in sending data to tf
-        self.timg = tf.Variable(np.zeros(shape), dtype=tf.float32)
-        self.tlab = tf.Variable(np.zeros((batch_size,num_labels)), dtype=tf.float32)
-        self.const = tf.Variable(np.zeros(batch_size), dtype=tf.float32)
+        self.timg = tf.Variable(np.zeros(self.shape), dtype=tf.float32, name='timg')
+        self.tlab = tf.Variable(np.zeros((batch_size,num_labels)), dtype=tf.float32, name='tlab')
+        self.const = tf.Variable(np.zeros(batch_size), dtype=tf.float32, name='const')
 
         # and here's what we use to assign them
-        self.assign_timg = tf.placeholder(tf.float32, shape)
+        self.assign_timg = tf.placeholder(tf.float32, self.shape)
         self.assign_tlab = tf.placeholder(tf.float32, (batch_size,num_labels))
         self.assign_const = tf.placeholder(tf.float32, [batch_size])
         
         # the resulting image, tanh'd to keep bounded from -0.5 to 0.5
-        self.newimg = tf.tanh(modifier + self.timg)/2
+        self.newimg = tf.tanh(self.modifier + self.timg)/2
         
         # prediction BEFORE-SOFTMAX of the model
         self.output = model(self.newimg)
         
+        
         # distance to the input data
-        self.l2dist = tf.reduce_sum(tf.square(self.newimg-tf.tanh(self.timg)/2),[1,2,3])
+        mm = tf.square(self.newimg-tf.tanh(self.timg)/2)
+        temp = tf.where(tf.is_nan(mm), tf.zeros_like(mm), mm)
+        self.l2dist = tf.reduce_sum(temp,[1,2,3])
         
         # compute the probability of the label class versus the maximum other
         real = tf.reduce_sum((self.tlab)*self.output,1)
@@ -98,12 +102,12 @@ class CarliniL2:
         # sum up the losses
         self.loss2 = tf.reduce_sum(self.l2dist)
         self.loss1 = tf.reduce_sum(self.const*loss1)
-        self.loss = self.loss1+self.loss2
+        self.loss = self.loss1 +self.loss2
         
         # Setup the adam optimizer and keep track of variables we're creating
         start_vars = set(x.name for x in tf.global_variables())
         optimizer = tf.train.AdamOptimizer(self.LEARNING_RATE)
-        self.train = optimizer.minimize(self.loss, var_list=[modifier])
+        self.train = optimizer.minimize(self.loss, var_list=[self.modifier])
         end_vars = tf.global_variables()
         new_vars = [x for x in end_vars if x.name not in start_vars]
 
@@ -113,8 +117,8 @@ class CarliniL2:
         self.setup.append(self.tlab.assign(self.assign_tlab))
         self.setup.append(self.const.assign(self.assign_const))
         
-        self.init = tf.variables_initializer(var_list=[modifier]+new_vars)
-
+        self.init = tf.variables_initializer(var_list=[self.modifier]+new_vars)
+        
     def attack(self, imgs, targets):
         """
         Perform the L_2 attack on the given images for the given targets.
@@ -176,13 +180,25 @@ class CarliniL2:
             self.sess.run(self.setup, {self.assign_timg: batch,
                                        self.assign_tlab: batchlab,
                                        self.assign_const: CONST})
-            
+
+            #print("newimg:%s"%(tf.reduce_any(tf.is_nan(self.newimg)).eval()))
+            #print("newimg_nonzero:%s"%(tf.count_nonzero(self.newimg).eval()))
+            #print("timg:%s"%(tf.reduce_any(tf.is_nan(self.timg)).eval()))
+            #print("timg_nonzero:%s"%(tf.count_nonzero(self.timg).eval()))
+
             prev = 1e6
             for iteration in range(self.MAX_ITERATIONS):
                 # perform the attack 
                 _, l, l2s, scores, nimg = self.sess.run([self.train, self.loss, 
                                                          self.l2dist, self.output, 
                                                          self.newimg])
+
+                #print(tf.reduce_max(self.newimg).eval())
+                #print(tf.reduce_min(self.newimg).eval())
+                #print("newimg:%s"%(tf.reduce_any(tf.is_nan(self.newimg)).eval()))
+                #print("timg:%s"%(tf.reduce_any(tf.is_nan(self.timg)).eval()))
+                #print("nan:%s\n"%(tf.reduce_any(tf.is_nan(tf.square(self.newimg-tf.tanh(self.timg)/2))).eval()))
+
 
                 # print out the losses every 10%
                 if iteration%(self.MAX_ITERATIONS//10) == 0:

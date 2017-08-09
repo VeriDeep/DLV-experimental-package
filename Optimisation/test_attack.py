@@ -25,6 +25,8 @@ def show(img):
     """
     remap = "  .*#"+"#"*100
     img = (img.flatten()+.5)*3
+    for i in range(len(img)): 
+        if math.isnan(img[i]): img[i] = 0
     if len(img) != 784: return
     print("START")
     for i in range(28):
@@ -63,17 +65,29 @@ def generate_data(data, samples, targeted=True, start=0, inception=False):
     targets = np.array(targets)
 
     return inputs, targets
+    
+def getTargets(label):
+    label2 = []
+    label1 = copy.deepcopy(label)
+    for l in label1: 
+        l = l.tolist()
+        if l.index(max(l)) < NN.nb_classes - 1: 
+            l = [0] + l 
+        else: 
+            l = [1] + l 
+        label2.append(l[:NN.nb_classes])
+    return np.array(label2)
 
 
 def test_attack(sess,model,data,label): 
         
     attack = CarliniL2(sess, model, len(data[0][1]), NN.img_channels, NN.nb_classes, batch_size=len(data), max_iterations=1000, confidence=0)
-
+    
     #inputs, targets = generate_data(data, samples=1, targeted=True,
     #                                start=0, inception=False)
     timestart = time.time()
     #adv = attack.attack(inputs, targets)
-    adv = attack.attack(data, label)
+    adv = attack.attack(data, getTargets(label))
     print(adv.shape)
     timeend = time.time()
         
@@ -86,13 +100,11 @@ def test_attack(sess,model,data,label):
         show(adv[i])
             
         # keep information for the original image
-        (newClass,newConfident) = NN.predictWithImage(model,adv[i])
+        (newClass,newConfident) = NN.predictWithImage(model,adv[i]+0.5)
         newClassStr = dataBasics.LABELS(int(newClass))
-        path0="%s/%s_converted_into_%s_with_confidence_%s.png"%(directory_pic_string,startIndexOfImage,newClassStr,newConfident)
+        path0="%s/%s_converted_into_%s_with_confidence_%s.png"%(directory_pic_string,startIndexOfImage+i,newClassStr,newConfident)
         dataBasics.save(-1,np.squeeze(adv[i]), path0)
             
-        print("Classification:", model.model.predict(adv[i:i+1]))
-
-        print("Total distortion:", np.sum((adv[i]-data[i])**2)**.5)
-        
+        print("Classification:", model.predict(adv[i:i+1]+0.5))
+        print("Total distortion:", np.sum((adv[i]-data[i])**2)**.5)        
         print("L1 distance:", l1Distance(data[i],adv[i]))
