@@ -164,7 +164,11 @@ def loadData():
 
         #score = model.evaluate(X_test, Y_test, verbose=0)
         # save model
-        ae =  "_32" # "_48" # "_28" #   "_normal" # "_autoencoder"  #
+        #ae =  "_32" # "_48" # "_28" #   "_normal" # "_autoencoder"  #
+        if K.backend() == 'tensorflow':
+            ae = "_tensorflow"
+        else: 
+            ae = "_theano"
         json_string = model.to_json()
         open('%s/gtsrb%s.json'%(directory_model_string,ae), 'w').write(json_string)
         model.save_weights('%s/gtsrb%s.h5'%(directory_model_string,ae), overwrite=True)
@@ -173,7 +177,11 @@ def loadData():
         
     elif whichMode == "read" and dataset == "gtsrb": 
         print("Start loading model ... ")
-        ae =  "_32" # "_48" # "_28" #   "_normal" # "_autoencoder"  #
+        #ae =  "_32" # "_48" # "_28" #   "_normal" # "_autoencoder"  #
+        if K.backend() == 'tensorflow':
+            ae = "_tensorflow"
+        else: 
+            ae = "_theano"
         model = NN.read_model_from_file('%s/gtsrb%s.mat'%(directory_model_string,ae),'%s/gtsrb%s.json'%(directory_model_string,ae))
         print("Model loaded!")
         #test(model)
@@ -189,7 +197,10 @@ def loadData():
         
         print "Building network model ......"
         model = NN.build_model(img_channels, img_rows, img_cols, nb_classes)
-        ae = ""
+        if K.backend() == 'tensorflow':
+            ae = "_tensorflow"
+        else: 
+            ae = "_theano"
 
         start_time = time.time()
         if not data_augmentation:
@@ -224,7 +235,7 @@ def loadData():
             model.fit_generator(datagen.flow(X_train, Y_train,
                                 batch_size=batch_size),
                                 samples_per_epoch=X_train.shape[0],
-                                nb_epoch=1,
+                                nb_epoch=nb_epoch,
                                 validation_data=(X_test, Y_test))
                                 
         score = model.evaluate(X_test, Y_test, verbose=0)
@@ -242,7 +253,10 @@ def loadData():
         
     elif whichMode == "read" and dataset == "cifar10" and trainingModel == "normal": 
         print("Start loading model ... ")
-        ae = ""
+        if K.backend() == 'tensorflow':
+            ae = "_tensorflow"
+        else: 
+            ae = "_theano"
         (X_train,Y_train,X_test,Y_test, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch, data_augmentation) = NN.read_dataset()
         model = NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, '%s/cifar10%s.mat'%(directory_model_string,ae),'%s/cifar10%s.json'%(directory_model_string,ae))
         model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
@@ -266,7 +280,10 @@ def loadData():
         # consider the layer of the original model
         layerToCut = startLayer
 
-        ae =  ""  
+        if K.backend() == 'tensorflow':
+            ae = "_tensorflow"
+        else: 
+            ae = "_theano" 
         model = NN.read_model_and_autoencoder_from_file(model,'%s/cifar10%s.mat'%(directory_model_string,ae),'%s/cifar10%s.json'%(directory_model_string,ae),layerToCut)
 
         Y_train = X_train
@@ -328,7 +345,10 @@ def loadData():
         # consider the layer of the original model
         layerToCut = startLayer
         
-        ae = ""
+        if K.backend() == 'tensorflow':
+            ae = "_tensorflow"
+        else: 
+            ae = "_theano"
         (X_train,Y_train,X_test,Y_test, img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch, data_augmentation) = NN.read_dataset()
         model = NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, '%s/cifar10%s.mat'%(directory_model_string,ae),'%s/cifar10%s.json'%(directory_model_string,ae))
         model.compile(optimizer='rmsprop', loss='categorical_crossentropy')

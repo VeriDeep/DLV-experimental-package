@@ -6,12 +6,13 @@ import numpy as np
 from skimage import color, exposure, transform, io
 import glob
 import h5py
+from keras import backend as K
 
-NUM_CLASSES = 43
+nb_classes = 43
 IMG_SIZE = 32
 
 def next_index(index,index2):
-    if index < NUM_CLASSES - 1: index1 = index + 1
+    if index < nb_classes - 1: index1 = index + 1
     else: index1 = 0
     if index1 != index2: return index1
     else: return next_index(index1,index2)
@@ -69,7 +70,7 @@ def get_class(img_path):
     
     
 def toVector(num):
-    ar = np.zeros(NUM_CLASSES)
+    ar = np.zeros(nb_classes)
     ar[num-1] = 1
     return ar
     
@@ -78,7 +79,10 @@ def read_dataset():
     try:
         with  h5py.File('networks/X.h5') as hf: 
             X, Y = hf['imgs'][:], hf['labels'][:]
-        X = np.array(map(lambda x: transform.resize(x, (3, IMG_SIZE,IMG_SIZE)), X))
+        if K.backend() == 'tensorflow': 
+            X = np.array(map(lambda x: transform.resize(x, (IMG_SIZE,IMG_SIZE, 3)), X))
+        else: 
+            X = np.array(map(lambda x: transform.resize(x, (3, IMG_SIZE,IMG_SIZE)), X))
         Y = np.array(map(toVector, Y))
         print("Loaded images from X.h5")
 
@@ -104,7 +108,7 @@ def read_dataset():
                 pass
 
         X = np.array(imgs, dtype='float32')
-        Y = np.eye(NUM_CLASSES, dtype='uint8')[labels]
+        Y = np.eye(nb_classes, dtype='uint8')[labels]
     
 
         with h5py.File('networks/X.h5','w') as hf:
@@ -121,7 +125,8 @@ def save(layer,image,filename):
     import copy
 
     image_cv = copy.deepcopy(image)
-    image_cv = image_cv.transpose(1, 2, 0)
+    if K.backend() == 'theano': 
+        image_cv = image_cv.transpose(1, 2, 0)
     
     #print(np.amax(image),np.amin(image))
 

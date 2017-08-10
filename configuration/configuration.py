@@ -17,9 +17,9 @@ from usual_configuration import *
 #######################################################
 
 # which dataset to work with
-dataset = "mnist"
+#dataset = "mnist"
 #dataset = "gtsrb"
-#dataset = "cifar10"
+dataset = "cifar10"
 #dataset = "imageNet"
 
 # the network is trained from scratch

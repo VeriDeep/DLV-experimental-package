@@ -1,6 +1,7 @@
 import os, struct
 from array import array as pyarray
 from cvxopt.base import matrix
+from keras import backend as K
 import numpy as np
 
 import PIL.Image
@@ -25,7 +26,8 @@ def save(layer,image,filename):
     import copy
 
     image_cv = copy.deepcopy(image)
-    image_cv = image_cv.transpose(1, 2, 0)
+    if K.backend() == 'theano': 
+        image_cv = image_cv.transpose(1, 2, 0)
     
     #print(np.amax(image),np.amin(image))
 

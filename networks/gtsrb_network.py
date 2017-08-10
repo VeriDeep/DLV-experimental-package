@@ -30,7 +30,9 @@ from gtsrb import *
 batch_size = 32
 nb_epoch = 30
 IMG_SIZE = 32
-NUM_CLASSES = 43
+img_rows, img_cols = 32, 32
+img_channels = 3
+nb_classes = 43
 lr = 0.01
 
 def build_model():
@@ -38,9 +40,17 @@ def build_model():
     define neural network model
     """
     
+    if K.backend() == 'tensorflow': 
+        K.set_learning_phase(0)
+    
+    if K.backend() == 'tensorflow': 
+        inputShape = (img_rows,img_cols,img_channels)
+    else: 
+        inputShape = (img_channels,img_rows,img_cols)
+    
     model = Sequential()
 
-    model.add(Convolution2D(32, 3, 3, border_mode='same', input_shape=(3, IMG_SIZE, IMG_SIZE), activation='relu'))
+    model.add(Convolution2D(32, 3, 3, border_mode='same', input_shape=inputShape, activation='relu'))
     model.add(Convolution2D(32, 3, 3, activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Dropout(0.2))
@@ -58,7 +68,7 @@ def build_model():
     model.add(Flatten())
     model.add(Dense(512, activation='relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(NUM_CLASSES, activation='softmax'))  
+    model.add(Dense(nb_classes, activation='softmax'))  
 
     # let's train the model using SGD + momentum
 
@@ -116,17 +126,26 @@ def read_model_from_file(weightFile,modelFile):
               
 def getImage(model,n_in_tests):
 
+    X, Y = read_dataset()
+    return X[n_in_tests]
+    
+    '''
     import pandas as pd
     import os
 
     test = pd.read_csv('networks/gtsrb/GT-final_test.csv',sep=';')
 
-
     file_name = test['Filename'][n_in_tests]
     img_path = os.path.join('networks/gtsrb/Final_Test/Images/',file_name)
     
     return preprocess_img(io.imread(img_path))
+    '''
     
+def getLabel(model,n_in_tests):
+
+    X, Y = read_dataset()
+    return Y[n_in_tests]
+        
 def getConfig(model):
 
     config = model.get_config()
