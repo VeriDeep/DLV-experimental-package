@@ -38,7 +38,7 @@ def usual_configuration(dataset):
     
         # which image to start with or work with 
         # from the database
-        startIndexOfImage = 594
+        startIndexOfImage = 597
         
         # the start layer to work from 
         startLayer = -1
@@ -60,7 +60,7 @@ def usual_configuration(dataset):
 
         # which image to start with or work with 
         # from the database
-        startIndexOfImage = 1121
+        startIndexOfImage = 1122
         
         # the layer to work on 
         startLayer = -1

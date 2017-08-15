@@ -34,10 +34,10 @@ whichMode = "read"
 trainingModel = "normal"
 
 # the number of images to be handled 
-dataProcessingBatchNum = 10
+dataProcessingBatchNum = 1
 
 
-manipulations = ["pixelSets", "squares", "sift",  "slic"]
+manipulations = ["pixelSets", "sift",  "squares",   "slic"]
 
 
 #######################################################

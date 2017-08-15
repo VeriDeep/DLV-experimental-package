@@ -124,6 +124,7 @@ def save(layer,image,filename):
     import cv2
     import copy
 
+    print(image.shape)
     image_cv = copy.deepcopy(image)
     if K.backend() == 'theano': 
         image_cv = image_cv.transpose(1, 2, 0)

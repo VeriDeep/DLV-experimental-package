@@ -8,6 +8,8 @@
 import tensorflow as tf
 import numpy as np
 import time
+import cv2
+import sys
 
 from configuration import *
 from basics import *
@@ -77,11 +79,39 @@ def getTargets(label):
             l = [1] + l 
         label2.append(l[:NN.nb_classes])
     return np.array(label2)
+    
+def SIFT_Filtered(image, threshold=0.0):
+    sift = cv2.SIFT() # cv2.xfeatures2d.SIFT_create()
+    kp, des = sift.detectAndCompute(image,None)
+        
+    #print kp[0], kp[0].response, kp[0].pt, kp[0].class_id, kp[0].octave, kp[0].size, len(des[0])
+
+    #FILTER RESPONSES:
+    
+    if len(kp) == 0: 
+        print("There is no keypont found in the image. \nPlease try approaches other than SIFT in processing this image. ")
+        sys.exit()
+    
+    actions = sorted(zip(kp,des), key=lambda x: x[0].response)
+
+    return zip(*actions)
+
+def getSIFT(data):
+    sifts = []
+    for image1 in data: 
+        if len(image1.shape) > 2: 
+            image1 = (image1*255).transpose(1, 2, 0)
+        image1=image1.astype(np.uint8)
+        kp, des = SIFT_Filtered(image1)
+        sifts.append((kp,des))
+    return sifts
 
 
 def test_attack(sess,model,data,label): 
+
+    sifts = getSIFT(data)
         
-    attack = CarliniL2(sess, model, len(data[0][1]), NN.img_channels, NN.nb_classes, batch_size=len(data), max_iterations=1000, confidence=0)
+    attack = CarliniL2(sess, model, len(data[0][1]), NN.img_channels, NN.nb_classes, sifts, batch_size=len(data), max_iterations=1000, confidence=0,targeted = False)
     
     #inputs, targets = generate_data(data, samples=1, targeted=True,
     #                                start=0, inception=False)

@@ -18,7 +18,8 @@ CONFIDENCE = 0           # how strong the adversarial example should be
 INITIAL_CONST = 1e-3     # the initial constant c to pick as a first guess
 
 class CarliniL2:
-    def __init__(self, sess, model, image_size, num_channels, num_labels, batch_size=1, confidence = CONFIDENCE,
+    def __init__(self, sess, model, image_size, num_channels, num_labels, sifts, 
+                 batch_size=1, confidence = CONFIDENCE,
                  targeted = TARGETED, learning_rate = LEARNING_RATE,
                  binary_search_steps = BINARY_SEARCH_STEPS, max_iterations = MAX_ITERATIONS,
                  abort_early = ABORT_EARLY, 
@@ -57,6 +58,7 @@ class CarliniL2:
         self.CONFIDENCE = confidence
         self.initial_const = initial_const
         self.batch_size = batch_size
+        self.sifts = sifts
 
         self.repeat = binary_search_steps >= 10
 
@@ -97,6 +99,8 @@ class CarliniL2:
         else:
             # if untargeted, optimize for making this class least likely.
             loss1 = tf.maximum(0.0, real-other+self.CONFIDENCE)
+            
+        print (zip *self.sifts)[0]
 
         # sum up the losses
         self.loss2 = tf.reduce_sum(self.l2dist)
