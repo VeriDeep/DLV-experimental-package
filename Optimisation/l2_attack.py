@@ -80,7 +80,7 @@ class CarliniL2:
         
         # the resulting image, tanh'd to keep bounded from -0.5 to 0.5
         self.newimg = tf.tanh(self.modifier + self.timg)/2
-        
+        print(self.newimg.shape)
         # prediction BEFORE-SOFTMAX of the model
         self.output = model(self.newimg+0.5)
         
@@ -100,7 +100,7 @@ class CarliniL2:
             # if untargeted, optimize for making this class least likely.
             loss1 = tf.maximum(0.0, real-other+self.CONFIDENCE)
             
-        print (zip *self.sifts)[0]
+        #print (zip *self.sifts)[0]
 
         # sum up the losses
         self.loss2 = tf.reduce_sum(self.l2dist)

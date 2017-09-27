@@ -42,7 +42,7 @@ def initialiseSiftKeypoints(model,image,manipulated):
         kp[i] = (kp[i][0]/2, kp[i][1]/2)
         #print "%s:%s"%(i,des[i])
          
-    print "%s keypoints are found. "%(len(kp))
+    print("%s keypoints are found. "%(len(kp)))
     
     allRegions = []
     num = len(kp)/featureDims  # numOfFeatures
@@ -72,7 +72,7 @@ def initialiseSiftKeypoints(model,image,manipulated):
         oneRegion = (nextSpan,nextNumSpan,featureDims)
         allRegions.append(oneRegion)
         i += 1
-    print "%s manipulations have been initialised."%(len(allRegions))
+    print("%s manipulations have been initialised."%(len(allRegions)))
     return allRegions
     
     

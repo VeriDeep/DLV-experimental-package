@@ -45,7 +45,7 @@ def initialisePixelSets(model,image,manipulated):
         newManipulated2 = list(set(newManipulated2 + oneRegion[0].keys()))
         if newManipulated1 == newManipulated2: break
         num -= 1
-    print "%s manipulations have been initialised."%(len(allRegions))
+    print("%s manipulations have been initialised."%(len(allRegions)))
     return allRegions
 
 
@@ -205,7 +205,7 @@ def getRandom3DActivation(image,manipulated,ps,numDimsToMani,layerToConsider):
     
     #print ks, pointsToConsider
     
-    return map(lambda (x,y): (ind,x,y),ks)
+    return map(lambda x,y: (ind,x,y),ks)
 
 
 def getTop3DActivation(image,manipulated,ps,numDimsToMani,layerToConsider): 

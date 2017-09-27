@@ -14,7 +14,7 @@ def getLayerType(model,layer2Consider):
         # get the type of the current layer
         layerType = [ lt for (l,lt) in config if layer2Consider == l ]
         if len(layerType) > 0: layerType = layerType[0]
-        else: print "cannot find the layerType"
+        else: print("cannot find the layerType")
     
         return layerType
     

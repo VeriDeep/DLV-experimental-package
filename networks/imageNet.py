@@ -2,8 +2,14 @@ import os, struct
 from array import array as pyarray
 from cvxopt.base import matrix
 import numpy as np
-
+from keras import backend as K
 import PIL.Image
+
+
+# input image dimensions
+img_rows, img_cols = 224, 224
+# the CIFAR10 images are RGB
+img_channels = 3
 
 # FIXME: need actual class names
 def LABELS(index): 
@@ -39,6 +45,9 @@ def save(layer,image,filename):
     import copy
     
     image_cv = copy.deepcopy(image)
+    
+    if K.backend() == 'tensorflow':
+        image_cv = image_cv.reshape(img_channels,img_rows,img_cols)
 
 
     if len(image_cv) == 3: 

@@ -86,7 +86,7 @@ def handleOne(model,autoencoder,startIndexOfImage,manipulationType):
     if startLayer > -1: 
         path0="%s/%s_autoencoder.png"%(directory_pic_string,startIndexOfImage)
         dataBasics.save(-1,output, path0)
-        print "handling activations of layer %s with shape %s ... "%(startLayer, str(activations.shape))
+        print("handling activations of layer %s with shape %s ... "%(startLayer, str(activations.shape)))
     
     # initialise a search tree
     st = mcts(model,autoencoder,image,activations,startLayer)
@@ -105,10 +105,10 @@ def handleOne(model,autoencoder,startIndexOfImage,manipulationType):
         l1dist = st.l1Dist(st.rootIndex)
         percent = st.diffPercent(st.rootIndex)
         diffs = st.diffImage(st.rootIndex)
-        print "euclidean distance %s"%(eudist)
-        print "L1 distance %s"%(l1dist)
-        print "manipulated percentage distance %s"%(percent)
-        print "manipulated dimensions %s"%(diffs)
+        print("euclidean distance %s"%(eudist))
+        print("L1 distance %s"%(l1dist))
+        print("manipulated percentage distance %s"%(percent))
+        print("manipulated dimensions %s"%(diffs))
 
         start_time_level = time.time()
         runningTime_level = 0
@@ -132,7 +132,7 @@ def handleOne(model,autoencoder,startIndexOfImage,manipulationType):
         path0="%s/%s_temp_%s.png"%(directory_pic_string,startIndexOfImage,len(diffs))
         dataBasics.save(-1,image1,path0)
         (newClass,newConfident) = NN.predictWithImage(model,image1)
-        print "confidence: %s"%(newConfident)
+        print("confidence: %s"%(newConfident))
                 
         if childTerminated == True: break
                 
@@ -174,17 +174,17 @@ def handleOne(model,autoencoder,startIndexOfImage,manipulationType):
             path0="%s/%s_adv_%s_%s_%s.png"%(directory_pic_string,startIndexOfImage,i,advnum,advClassStr)
             dataBasics.save(-1,advimg,path0)
         
-        print "number of adversarial examples found: %s"%(st.numAdv)
+        print("number of adversarial examples found: %s"%(st.numAdv))
     
         eudist = euclideanDistance(st.image,image1)
         l1dist = l1Distance(st.image,image1)
         percent = diffPercent(st.image,image1)
-        print "euclidean distance %s"%(eudist)
-        print "L1 distance %s"%(l1dist)
-        print "manipulated percentage distance %s"%(percent)
-        print "class is changed into %s with confidence %s\n"%(newClassStr, newConfident)
+        print("euclidean distance %s"%(eudist))
+        print("L1 distance %s"%(l1dist))
+        print("manipulated percentage distance %s"%(percent))
+        print("class is changed into %s with confidence %s\n"%(newClassStr, newConfident))
     else: 
-        print "failed to find an adversary image within prespecified bounded computational resource. "
+        print("failed to find an adversary image within prespecified bounded computational resource. ")
                 
     newXtrain,newYtrain = st.re_training.returnData()
     st.destructor()

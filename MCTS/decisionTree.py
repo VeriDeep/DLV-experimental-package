@@ -71,7 +71,7 @@ class decisionTree:
         for k,ls in self.actions.iteritems():
             if e in ls[1].keys() : 
                 return (k, [ e2 for e2 in dims if e2 not in ls[1].keys() ])
-        print "decisionTree: getAction: cannot find action "
+        print("decisionTree: getAction: cannot find action ")
         
         
     def removeEmptyLeaves(self): 

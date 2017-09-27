@@ -120,7 +120,7 @@ class mcts:
             
         for i in range(len(allChildren)): 
             self.actions[i] = allChildren[i] 
-        print "%s actions have been initialised. "%(len(self.actions))
+        print("%s actions have been initialised. "%(len(self.actions)))
         # initialise decision tree
         self.decisionTree = decisionTree(self.model, self.actions,self.activations, "decision")
         
@@ -154,7 +154,7 @@ class mcts:
     # move one step forward
     # it means that we need to remove children other than the new root
     def makeOneMove(self,newRootIndex): 
-        print "making a move into the new root %s, whose value is %s and visited number is %s"%(newRootIndex,self.cost[newRootIndex],self.numberOfVisited[newRootIndex])
+        print("making a move into the new root %s, whose value is %s and visited number is %s"%(newRootIndex,self.cost[newRootIndex],self.numberOfVisited[newRootIndex]))
         self.removeChildren(self.rootIndex,[newRootIndex])
         self.rootIndex = newRootIndex
     

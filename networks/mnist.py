@@ -29,7 +29,7 @@ def read(digits=np.arange(10), dataset = "training", path = "."):
         fname_img = os.path.join(path, 'mnist/t10k-images-idx3-ubyte')
         fname_lbl = os.path.join(path, 'mnist/t10k-labels-idx1-ubyte')
     else:
-        raise ValueError, "dataset must be 'testing' or 'training'"
+        raise ValueError
 
     flbl = open(fname_lbl, 'rb')
     magic_nr, size = struct.unpack(">II", flbl.read(8))

@@ -28,9 +28,9 @@ def checkCex(model,x):
         result = False
 
     if result == True: 
-        print "the point " + str(x) + " is a counterexample!"
+        print("the point " + str(x) + " is a counterexample!")
     else: 
-        print "error: the point " + str(x) + " is NOT a counterexample! please check ... "
+        print("error: the point " + str(x) + " is NOT a counterexample! please check ... ")
     return result
     
 def current_milli_time():

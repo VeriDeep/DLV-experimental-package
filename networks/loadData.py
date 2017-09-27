@@ -53,7 +53,7 @@ def loadData():
         Y_train_transferability = Y_train[1:150]
         nb_epoch_transferability = 5
     
-        print "Building network model ......"
+        print("Building network model ......")
         model = NN.build_model()
 
         start_time = time.time()
@@ -99,7 +99,7 @@ def loadData():
         # consider the layer 3 of the original model
         layerToCut = startLayer
         
-        print "Building network model_and_autoencoder ......"
+        print("Building network model_and_autoencoder ......")
         model = NN.build_model_and_autoencoder(layerToCut) 
         
         ae =  ""  
@@ -145,7 +145,7 @@ def loadData():
         
         #print X_train.shape, Y_train.shape, Y_train[0]
 
-        print "Building network model ......"
+        print("Building network model ......")
         model, batch_size, nb_epoch, lr = NN.build_model()
         
         def lr_schedule(epoch):
@@ -195,7 +195,7 @@ def loadData():
         X_train /= 255
         X_test /= 255
         
-        print "Building network model ......"
+        print("Building network model ......")
         model = NN.build_model(img_channels, img_rows, img_cols, nb_classes)
         if K.backend() == 'tensorflow':
             ae = "_tensorflow"
@@ -212,7 +212,7 @@ def loadData():
                       shuffle=True)
         else:
             print('Using real-time data augmentation.')
-            print X_train.shape[0]
+            print(X_train.shape[0])
 
             # this will do preprocessing and realtime data augmentation
             datagen = ImageDataGenerator(
@@ -274,7 +274,7 @@ def loadData():
         # temporary setting
         #nb_epoch = 1
         
-        print "Building network model ......"
+        print("Building network model ......")
         model = NN.build_model_and_autoencoder(img_channels, img_rows, img_cols, nb_classes)
         
         # consider the layer of the original model
@@ -300,7 +300,7 @@ def loadData():
                       shuffle=True)
         else:
             print('Using real-time data augmentation.')
-            print X_train.shape[0]
+            print(X_train.shape[0])
 
             # this will do preprocessing and realtime data augmentation
             datagen = ImageDataGenerator(
@@ -365,7 +365,7 @@ def loadData():
     
         (img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch, data_augmentation) = NN.read_dataset()
         
-        print "Building network model ......"
+        print("Building network model ......")
         model = NN.build_model(img_channels, img_rows, img_cols, nb_classes)
     
         # load weights
@@ -379,10 +379,14 @@ def loadData():
         print("Model saved!")
         
     elif whichMode == "read" and dataset == "imageNet": 
+        from keras import applications
         print("Start loading model ... ")
-        (img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch, data_augmentation) = NN.read_dataset()
-        model = NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, '%s/imageNet.mat'%directory_model_string,'%s/imageNet.json'%directory_model_string)
-        model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
+        if K.backend() == 'tensorflow':
+            model = keras.applications.vgg16.VGG16()
+        else: 
+            (img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch, data_augmentation) = NN.read_dataset()
+            model = NN.read_model_from_file(img_channels, img_rows, img_cols, nb_classes, '%s/imageNet.mat'%directory_model_string,'%s/imageNet.json'%directory_model_string)
+            model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
         print("Model loaded!")
         
     elif whichMode == "train" and dataset == "twoDcurve": 
@@ -393,7 +397,7 @@ def loadData():
         N_tests = 1000
         x_train, y_train, x_test, y_test = NN.load_data(N_samples,N_tests)
         
-        print "Building network model ......"
+        print("Building network model ......")
         model = NN.build_model()
     
         plot(model, to_file='twoDcurve_pic/model.png')

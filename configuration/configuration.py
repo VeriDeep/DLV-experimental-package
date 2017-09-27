@@ -37,7 +37,7 @@ trainingModel = "normal"
 dataProcessingBatchNum = 1
 
 
-manipulations = ["pixelSets", "sift",  "squares",   "slic"]
+manipulations = ["pixelSets", "sift",  "squares", "slic"]
 
 
 #######################################################

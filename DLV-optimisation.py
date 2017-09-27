@@ -64,10 +64,14 @@ def main():
             imageIndex = startIndexOfImage + i
     
             image = NN.getImage(model,imageIndex)
-            label = NN.getLabel(model,imageIndex)
+            (originalClass,originalConfident) = NN.predictWithImage(model,image)
+            if dataset == "imageNet": 
+                label = np.zeros(NN.nb_classes)
+                label[originalClass] = 1 
+            else: 
+                label = NN.getLabel(model,imageIndex)
     
             # keep information for the original image
-            (originalClass,originalConfident) = NN.predictWithImage(model,image)
             origClassStr = dataBasics.LABELS(int(originalClass))
             path0="%s/%s_original_as_%s_with_confidence_%s.png"%(directory_pic_string,imageIndex,origClassStr,originalConfident)
             dataBasics.save(-1, np.squeeze(image), path0)

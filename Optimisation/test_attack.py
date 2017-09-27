@@ -109,7 +109,7 @@ def getSIFT(data):
 
 def test_attack(sess,model,data,label): 
 
-    sifts = getSIFT(data)
+    sifts = [] # getSIFT(data)
         
     attack = CarliniL2(sess, model, len(data[0][1]), NN.img_channels, NN.nb_classes, sifts, batch_size=len(data), max_iterations=1000, confidence=0,targeted = False)
     

@@ -547,9 +547,9 @@ def getWeightVector(model, layer2Consider):
     biasVector = []
 
     for layer in model.layers:
-    	 index=model.layers.index(layer)
+         index=model.layers.index(layer)
          h=layer.get_weights()
-         
+    	 
          if len(h) > 0 and index in [0,2]  and index <= layer2Consider: 
          # for convolutional layer
              ws = h[0]

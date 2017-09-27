@@ -44,7 +44,7 @@ def initialiseSquares(model,image,manipulated):
         imageLevel = 3
         imageSize = len(image[0])
     squareSize = findSquareSize(featureDims, imageSize)
-    print "working with squares of size %s*%s"%(squareSize,squareSize)
+    print("working with squares of size %s*%s"%(squareSize,squareSize))
     ps = findUpperLeftPoints(squareSize, imageSize)
     #print ps
     for i in ps: 
@@ -52,7 +52,7 @@ def initialiseSquares(model,image,manipulated):
             oneRegion = getOneRegion(i,j,squareSize,imageLevel)
             allRegions.append(oneRegion)
     
-    print "%s manipulations have been initialised."%(len(allRegions))
+    print("%s manipulations have been initialised."%(len(allRegions)))
     return allRegions
 
 

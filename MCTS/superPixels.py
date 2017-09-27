@@ -9,10 +9,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 
-from skimage.data import astronaut
 from skimage.color import rgb2gray
-from skimage.filters import sobel
-from skimage.segmentation import felzenszwalb, slic, quickshift, watershed
+#from skimage.filters import sobel
+from skimage.segmentation import felzenszwalb, slic, quickshift #, watershed
 from skimage.segmentation import mark_boundaries
 from skimage.util import img_as_float
 import copy

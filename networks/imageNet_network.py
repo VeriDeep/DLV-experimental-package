@@ -33,11 +33,24 @@ def read_dataset():
 
     #FIXME: at the moment, we dont know where to read dataset directly 
     return (img_channels, img_rows, img_cols, batch_size, nb_classes, nb_epoch, data_augmentation)
+    
+
+
+    
 
 def build_model(img_channels, img_rows, img_cols, nb_classes):
 
+    if K.backend() == 'tensorflow': 
+        K.set_learning_phase(0)
+    
+    if K.backend() == 'tensorflow': 
+        inputShape = (img_rows,img_cols,img_channels)
+    else: 
+        inputShape = (img_channels,img_rows,img_cols)
+
+
     model = Sequential()
-    model.add(ZeroPadding2D((1,1),input_shape=(img_channels, img_rows, img_cols)))
+    model.add(ZeroPadding2D((1,1),input_shape=inputShape))
     model.add(Convolution2D(64, 3, 3, activation='relu'))
     model.add(ZeroPadding2D((1,1)))
     model.add(Convolution2D(64, 3, 3, activation='relu'))
@@ -99,13 +112,13 @@ def read_model_from_file(img_channels, img_rows, img_cols, nb_classes, weightFil
     model = model_from_json(open(modelFile).read())
     model.summary()
     
-    weights = sio.loadmat(weightFile)
+    #weights = sio.loadmat(weightFile)
         
-    for (idx,lvl) in [(1,1),(2,3),(3,6),(4,8),(5,11),(6,13),(7,15),(8,18),(9,20),(10,22),(11,25),(12,27),(13,29),(14,32),(15,34),(16,36)]:
+    #for (idx,lvl) in [(1,1),(2,3),(3,6),(4,8),(5,11),(6,13),(7,15),(8,18),(9,20),(10,22),(11,25),(12,27),(13,29),(14,32),(15,34),(16,36)]:
         
-        weight_1 = 2 * idx - 2
-        weight_2 = 2 * idx - 1
-        model.layers[lvl].set_weights([weights['weights'][0, weight_1], weights['weights'][0, weight_2].flatten()])
+     #   weight_1 = 2 * idx - 2
+    #    weight_2 = 2 * idx - 1
+     #   model.layers[lvl].set_weights([weights['weights'][0, weight_1], weights['weights'][0, weight_2].flatten()])
 
     return model
 
@@ -168,9 +181,12 @@ def getImage(model,n_in_tests):
     
     #print(np.amax(im),np.amin(im))
 
-    im = np.expand_dims(im, axis=0)
+    #im = np.expand_dims(im, axis=0)
     
-    return np.squeeze(im)
+    if K.backend() == 'tensorflow':
+        im = im.reshape(img_rows,img_cols,img_channels)
+    
+    return im #np.squeeze(im)
     
     
 def readImage(path):
@@ -212,7 +228,7 @@ def getWeightVector(model,layer2Consider):
     biasVector = []
 
     for layer in model.layers:
-    	 index=model.layers.index(layer)
+         index=model.layers.index(layer)
          h=layer.get_weights()
          
          if len(h) > 0 and index in [1,3,6,8,11,13,15,18,20,22,25,27,29] and index <= layer2Consider: 
