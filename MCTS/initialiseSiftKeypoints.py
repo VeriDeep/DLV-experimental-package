@@ -106,12 +106,16 @@ def getPoints_twoPlayer(image, kps):
     points = {}
     for x in range(len(image)): 
        for y in range(len(image[0])): 
-            ps = {}
+            ps = 0
+            maxk = -1
             for i in range(1, len(kps)+1): 
                k = kps[i-1]
                dist2 = np.linalg.norm(np.array([x,y]) - np.array([k.pt[0],k.pt[1]]))
-               ps[i] = norm.pdf(dist2, loc=0.0, scale=k.size)
-            maxk = max(ps.iteritems(), key=operator.itemgetter(1))[0]
+               ps2 = norm.pdf(dist2, loc=0.0, scale=k.size)
+               if ps2 > ps: 
+                   ps = ps2
+                   maxk = i
+            #maxk = max(ps.iteritems(), key=operator.itemgetter(1))[0]
             if maxk in points.keys(): 
                 points[maxk].append((x,y))
             else: points[maxk] = [(x,y)]
