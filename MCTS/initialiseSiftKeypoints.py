@@ -84,7 +84,7 @@ def initialiseSiftKeypointsTwoPlayer(model,image,manipulated):
             i += 1
         actions[s] = allRegions
         s += 1
-        print("%s manipulations have been initialised for keypoint (%s,%s)."%(len(allRegions), k.pt[0]/imageEnlargeProportion, k.pt[1]/imageEnlargeProportion))
+        nprint("%s manipulations have been initialised for keypoint (%s,%s)."%(len(allRegions), k.pt[0]/imageEnlargeProportion, k.pt[1]/imageEnlargeProportion))
     return actions
         
 def SIFT_Filtered_twoPlayer(image): #threshold=0.0):

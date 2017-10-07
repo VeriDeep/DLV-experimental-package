@@ -194,7 +194,8 @@ class mcts_twoPlayer:
             allValues = {}
             for childIndex in self.children[index]: 
                 allValues[childIndex] = (self.cost[childIndex] / float(self.numberOfVisited[childIndex])) + explorationRate * math.sqrt(math.log(self.numberOfVisited[index]) / float(self.numberOfVisited[childIndex]))
-            nextIndex = max(allValues.iteritems(), key=operator.itemgetter(1))[0]
+            #nextIndex = max(allValues.iteritems(), key=operator.itemgetter(1))[0]
+            nextIndex = np.random.choice(allValues.keys(), 1, p = allValues.values()/sum(allValues.values()))[0]
             if self.keypoint[index] in self.keypoint.keys() and self.keypoint[index] != 0 : 
                 self.usedActionsID[self.keypoint[index]].append(self.indexToActionID[index])
             elif self.keypoint[index] != 0 : 

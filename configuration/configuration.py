@@ -17,9 +17,9 @@ from usual_configuration import *
 #######################################################
 
 # which dataset to work with
-#dataset = "mnist"
+dataset = "mnist"
 #dataset = "gtsrb"
-dataset = "cifar10"
+#dataset = "cifar10"
 #dataset = "imageNet"
 
 # the network is trained from scratch
@@ -34,7 +34,7 @@ whichMode = "read"
 trainingModel = "normal"
 
 # the number of images to be handled 
-dataProcessingBatchNum = 1
+dataProcessingBatchNum = 2
 
 
 manipulations = [ "sift_twoPlayer",  "pixelSets",  "squares",    "sift_saliency",    "slic"]

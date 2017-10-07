@@ -37,8 +37,8 @@ def network_parameters(dataset):
         directory_statistics_string = makedirectory("data/mnist_statistics")
         directory_pic_string = makedirectory("data/mnist_pic")
         
-        imageEnlargeProportion = 5
-        featureDims = 2 # 20 #  20
+        imageEnlargeProportion = 2
+        featureDims = 1 # 20 #  20
         span = 255/float(255)
         numSpan = 1
 

@@ -12,7 +12,7 @@ def usual_configuration(dataset):
 
         # which image to start with or work with 
         # from the database
-        startIndexOfImage = 2240
+        startIndexOfImage = 2241
         
         # the layer to work with 
         # -1 is input layer
@@ -38,7 +38,7 @@ def usual_configuration(dataset):
     
         # which image to start with or work with 
         # from the database
-        startIndexOfImage = 598
+        startIndexOfImage = 599
         
         # the start layer to work from 
         startLayer = -1
@@ -51,7 +51,7 @@ def usual_configuration(dataset):
         
         # MCTS_level_maximal_time
         MCTS_level_maximal_time = 30
-        MCTS_all_maximal_time = 240
+        MCTS_all_maximal_time = 120
         MCTS_multi_samples = 1
  
         explorationRate = 0.5        
