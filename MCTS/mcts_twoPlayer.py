@@ -130,7 +130,7 @@ class mcts_twoPlayer:
             for j in range(len(actions[i])):
                 ast[j] = actions[i][j]
             self.actions[i] = ast
-        print("%s actions have been initialised. "%(len(self.actions)))
+        nprint("%s actions have been initialised. "%(len(self.actions)))
         # initialise decision tree
         #self.decisionTree = decisionTree(self.model, self.actions, self.activations, "decision")
         
@@ -190,7 +190,7 @@ class mcts_twoPlayer:
         
     def treeTraversal(self,index):
         if self.fullyExpanded[index] == True: 
-            print("tree traversal on node %s"%(index))
+            nprint("tree traversal on node %s"%(index))
             allValues = {}
             for childIndex in self.children[index]: 
                 allValues[childIndex] = (self.cost[childIndex] / float(self.numberOfVisited[childIndex])) + explorationRate * math.sqrt(math.log(self.numberOfVisited[index]) / float(self.numberOfVisited[childIndex]))
@@ -201,7 +201,7 @@ class mcts_twoPlayer:
                 self.usedActionsID[self.keypoint[index]] = [self.indexToActionID[index]]
             return self.treeTraversal(nextIndex)
         else: 
-            print("tree traversal terminated on node %s"%(index))
+            nprint("tree traversal terminated on node %s"%(index))
             availableActions = copy.deepcopy(self.actions)
             for k in self.usedActionsID.keys(): 
                 for i in self.usedActionsID[k]: 
@@ -209,7 +209,7 @@ class mcts_twoPlayer:
             return (index,availableActions)
         
     def initialiseExplorationNode(self,index,availableActions):
-        print("expanding %s"%(index))
+        nprint("expanding %s"%(index))
         if self.keypoint[index] != 0: 
             for (actionId, (span,numSpan,_)) in availableActions[self.keypoint[index]].iteritems() : #initialisePixelSets(self.model,self.image,list(set(self.spans[index].keys() + self.usefulPixels))): 
                 self.indexToNow += 1
@@ -342,7 +342,7 @@ class mcts_twoPlayer:
 
         if newClass != self.originalClass and newConfident > effectiveConfidenceWhenChanging:
             # and newClass == dataBasics.next_index(self.originalClass,self.originalClass): 
-            print("sampling a path ends in a terminal node with self.depth %s... "%self.depth)
+            nprint("sampling a path ends in a terminal node with self.depth %s... "%self.depth)
             
             (self.spansPath,self.numSpansPath) = self.scrutinizePath(self.spansPath,self.numSpansPath,newClass)
             
@@ -355,11 +355,11 @@ class mcts_twoPlayer:
             if self.bestCase[0] < dist: self.bestCase = (dist,self.spansPath,self.numSpansPath)
             return (self.depth == 0, dist)
         elif termByDist == True: 
-            print("sampling a path ends by controlled search with self.depth %s ... "%self.depth)
+            nprint("sampling a path ends by controlled search with self.depth %s ... "%self.depth)
             self.re_training.addDatum(activations1,self.originalClass)
             return (self.depth == 0, termValue)
         elif list(set(self.availableActionIDs[k])-set(self.usedActionIDs[k])) == []: 
-            print("sampling a path ends with self.depth %s because no more actions can be taken ... "%self.depth)
+            nprint("sampling a path ends with self.depth %s because no more actions can be taken ... "%self.depth)
             return (self.depth == 0, termValue)
         else: 
             #print("continue sampling node ... ")
