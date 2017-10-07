@@ -37,7 +37,7 @@ def network_parameters(dataset):
         directory_statistics_string = makedirectory("data/mnist_statistics")
         directory_pic_string = makedirectory("data/mnist_pic")
         
-        maxNumOfPointPerKeyPoint = 100
+        maxNumOfPointPerKeyPoint = 0
         imageEnlargeProportion = 2
         featureDims = 1 # 20 #  20
         span = 255/float(255)
@@ -51,7 +51,7 @@ def network_parameters(dataset):
         directory_statistics_string = makedirectory("data/cifar10_statistics")
         directory_pic_string = makedirectory("data/cifar10_pic")
  
-        maxNumOfPointPerKeyPoint = 100
+        maxNumOfPointPerKeyPoint = 0
         imageEnlargeProportion = 2
         featureDims = 1
         span = 255/float(255)
