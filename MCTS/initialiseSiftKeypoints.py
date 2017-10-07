@@ -54,10 +54,11 @@ def initialiseSiftKeypointsTwoPlayer(model,image,manipulated):
     points_all = getPoints_twoPlayer(image1, dist, kp, numOfPoints)
     for k, points in points_all.iteritems(): 
         allRegions = []
-        num = len(points)/featureDims  # numOfFeatures
         for i in range(len(points)):
         #     print kp[i].pt
             points[i] = (points[i][0]/imageEnlargeProportion, points[i][1]/imageEnlargeProportion)
+        points = list(set(points))
+        num = len(points)/featureDims  # numOfFeatures
         i = 0
         while i < num :
             nextSpan = {}
@@ -120,8 +121,10 @@ def getPoints_twoPlayer(image, dist, kps, n):
             beginingNum = len(points[mk])
             for i in range(beginingNum - maxNumOfPointPerKeyPoint): 
                 points[mk].remove(random.choice(points[mk]))
-
     return points
+    
+
+    
 
     
 '''
