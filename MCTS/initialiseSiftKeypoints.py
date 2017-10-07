@@ -11,11 +11,12 @@ import matplotlib.image as mpimg
 import cv2
 import numpy as np, cv
 from keras import backend as K
-from scipy.stats import truncnorm
+from scipy.stats import truncnorm, norm
 
 from basics import *
 from networkBasics import *
 from configuration import * 
+import collections
 
 ############################################################
 #
@@ -49,9 +50,10 @@ def initialiseSiftKeypointsTwoPlayer(model,image,manipulated):
     actions = {}
     actions[0] = kp
     s = 1
-    for k in kp: 
+    kp2 = []
+    points_all = getPoints_twoPlayer(image1, dist, kp, numOfPoints)
+    for k, points in points_all.iteritems(): 
         allRegions = []
-        points = getPoints_twoPlayer(image1, dist, kp, numOfPoints)
         num = len(points)/featureDims  # numOfFeatures
         for i in range(len(points)):
         #     print kp[i].pt
@@ -84,7 +86,9 @@ def initialiseSiftKeypointsTwoPlayer(model,image,manipulated):
             i += 1
         actions[s] = allRegions
         s += 1
-        nprint("%s manipulations have been initialised for keypoint (%s,%s)."%(len(allRegions), k.pt[0]/imageEnlargeProportion, k.pt[1]/imageEnlargeProportion))
+        kp2.append(kp[s-1])
+        print("%s manipulations have been initialised for keypoint (%s,%s)."%(len(allRegions), kp[k-1].pt[0]/imageEnlargeProportion, kp[k-1].pt[1]/imageEnlargeProportion))
+    actions[0] = kp2
     return actions
         
 def SIFT_Filtered_twoPlayer(image): #threshold=0.0):
@@ -97,6 +101,25 @@ def SIFT_Filtered_twoPlayer(image): #threshold=0.0):
     return  kp, getDistribution(image, kp)
     
 def getPoints_twoPlayer(image, dist, kps, n): 
+    import operator
+    points = {}
+    for x in range(len(image)): 
+       for y in range(len(image[0])): 
+            ps = {}
+            for i in range(1, len(kps)+1): 
+               k = kps[i-1]
+               dist = np.linalg.norm(np.array([x,y]) - np.array([k.pt[0],k.pt[1]]))
+               ps[i] = norm.pdf(dist, loc=0.0, scale=k.size)
+            maxk = max(ps.iteritems(), key=operator.itemgetter(1))[0]
+            if maxk in points.keys(): 
+                points[maxk].append((x,y))
+            else: points[maxk] = [(x,y)]
+    return points
+
+    
+'''
+    
+def getPoints_twoPlayer(image, dist, kps, n): 
     dist1 = np.zeros(dist.shape)
     for k in kps: 
         a = np.array((k.pt[0],k.pt[1]))
@@ -104,6 +127,7 @@ def getPoints_twoPlayer(image, dist, kps, n):
             for j in range(len(dist[0])): 
                 b = np.array((i,j))
                 dist2 = np.linalg.norm(a - b)
+                dist2 = scipy.stats.norm.pdf(dist2, loc=0.0, scale=k.size)
                 if dist2 < k.size: 
                     dist1[i][j] = dist[i][j]
     dist1 = dist1 / np.sum(dist1)
@@ -116,8 +140,8 @@ def getPoints_twoPlayer(image, dist, kps, n):
     l2 = []
     for ind in l: 
         l2.append(getPixelLoc(ind,image))
-    return list(set(l2))
-    
+    return list(set(l2)) 
+'''
     
 ############################################################
 #

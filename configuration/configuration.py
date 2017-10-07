@@ -34,7 +34,7 @@ whichMode = "read"
 trainingModel = "normal"
 
 # the number of images to be handled 
-dataProcessingBatchNum = 2
+dataProcessingBatchNum = 1
 
 
 manipulations = [ "sift_twoPlayer",  "pixelSets",  "squares",    "sift_saliency",    "slic"]

@@ -55,7 +55,8 @@ def euclideanDistance(image1,image2):
 def l1Distance(image1,image2):
     return np.sum(np.absolute(np.subtract(image1,image2)))/float(image1.size)
 
-
+def l0Distance(image1,image2):
+    return np.count_nonzero(np.absolute(np.subtract(image1,image2)))
 
 def normalisation(y):
     for k in range(len(y)): 

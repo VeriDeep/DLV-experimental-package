@@ -121,10 +121,12 @@ class mcts_twoPlayer:
             for k in actions[0]: 
                 self.keypoints[i] = k 
                 i += 1
+            #print self.keypoints
         else: 
             print("unknown manipulation type")
             exit
             
+        #print("actions=%s"%(actions.keys()))
         for i in range(len(actions)): 
             ast = {}
             for j in range(len(actions[i])):
@@ -195,7 +197,7 @@ class mcts_twoPlayer:
             for childIndex in self.children[index]: 
                 allValues[childIndex] = (self.cost[childIndex] / float(self.numberOfVisited[childIndex])) + explorationRate * math.sqrt(math.log(self.numberOfVisited[index]) / float(self.numberOfVisited[childIndex]))
             #nextIndex = max(allValues.iteritems(), key=operator.itemgetter(1))[0]
-            nextIndex = np.random.choice(allValues.keys(), 1, p = allValues.values()/sum(allValues.values()))[0]
+            nextIndex = np.random.choice(allValues.keys(), 1, p = [ x/sum(allValues.values()) for x in allValues.values()])[0]
             if self.keypoint[index] in self.keypoint.keys() and self.keypoint[index] != 0 : 
                 self.usedActionsID[self.keypoint[index]].append(self.indexToActionID[index])
             elif self.keypoint[index] != 0 : 
@@ -299,10 +301,10 @@ class mcts_twoPlayer:
             self.numSpansPath = self.numSpans[index] 
             self.depth = 0
             self.availableActionIDs = {}
-            for k in self.keypoints: 
+            for k in self.keypoints.keys(): 
                 self.availableActionIDs[k] = availableActions2[k].keys()
             self.usedActionIDs = {}
-            for k in self.keypoints: 
+            for k in self.keypoints.keys(): 
                 self.usedActionIDs[k] = []             
             self.accDims = [] 
             self.d = 2
@@ -448,6 +450,10 @@ class mcts_twoPlayer:
     def l1Dist(self,index): 
         activations1 = applyManipulation(self.activations,self.spans[index],self.numSpans[index])
         return l1Distance(self.activations,activations1)
+        
+    def l0Dist(self,index): 
+        activations1 = applyManipulation(self.activations,self.spans[index],self.numSpans[index])
+        return l0Distance(self.activations,activations1)
         
     def diffImage(self,index): 
         activations1 = applyManipulation(self.activations,self.spans[index],self.numSpans[index])

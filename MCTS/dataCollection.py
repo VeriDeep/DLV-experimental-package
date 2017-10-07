@@ -22,6 +22,7 @@ class dataCollection:
         self.manipulationPercentage = {}
         self.euclideanDistance = {}
         self.l1Distance = {}
+        self.l0Distance = {}
         self.confidence = {}
         self.fileName = "%s/dataCollection_%s.txt"%(directory_statistics_string,filenamePostfix)
         self.fileHandler = open(self.fileName, 'w')
@@ -48,6 +49,9 @@ class dataCollection:
     def addl1Distance(self, l1dist):
         self.l1Distance[self.index,self.layer] = l1dist
         
+    def addl0Distance(self, l0dist):
+        self.l0Distance[self.index,self.layer] = l0dist
+        
     def addSuccPercent(self, sp):
         self.succPercent = sp
         
@@ -71,6 +75,10 @@ class dataCollection:
         for i,r in self.l1Distance.iteritems():
             self.fileHandler.write("%s:%s\n"%(i,r))
             
+        self.fileHandler.write("L0 distance: \n")
+        for i,r in self.l0Distance.iteritems():
+            self.fileHandler.write("%s:%s\n"%(i,r))
+            
         self.fileHandler.write("confidence: \n")
         for i,r in self.confidence.iteritems():
             self.fileHandler.write("%s:%s\n"%(i,r))
@@ -88,6 +96,8 @@ class dataCollection:
         self.fileHandler.write("average euclidean distance: %s\n"%(eudist))
         l1dist = sum(self.l1Distance.values()) / len(self.l1Distance.values())
         self.fileHandler.write("average L1 distance: %s\n"%(l1dist))
+        l0dist = sum(self.l0Distance.values()) / len(self.l0Distance.values())
+        self.fileHandler.write("average L0 distance: %s\n"%(l0dist))
         self.fileHandler.write("success rate: %s\n"%(self.succPercent))
         
     def close(self):
