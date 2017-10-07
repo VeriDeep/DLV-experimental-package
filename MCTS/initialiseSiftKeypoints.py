@@ -87,7 +87,7 @@ def initialiseSiftKeypointsTwoPlayer(model,image,manipulated):
         actions[s] = allRegions
         kp2.append(kp[s-1])
         s += 1
-        print("%s manipulations have been initialised for keypoint (%s,%s)."%(len(allRegions), kp[k-1].pt[0]/imageEnlargeProportion, kp[k-1].pt[1]/imageEnlargeProportion))
+        nprint("%s manipulations have been initialised for keypoint (%s,%s)."%(len(allRegions), kp[k-1].pt[0]/imageEnlargeProportion, kp[k-1].pt[1]/imageEnlargeProportion))
     actions[0] = kp2
     return actions
         
