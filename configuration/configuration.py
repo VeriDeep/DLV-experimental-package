@@ -17,9 +17,9 @@ from usual_configuration import *
 #######################################################
 
 # which dataset to work with
-#dataset = "mnist"
+dataset = "mnist"
 #dataset = "gtsrb"
-dataset = "cifar10"
+#dataset = "cifar10"
 #dataset = "imageNet"
 
 # the network is trained from scratch
@@ -37,14 +37,14 @@ trainingModel = "normal"
 dataProcessingBatchNum = 1
 
 
-manipulations = ["pixelSets", "sift",  "squares", "slic"]
+manipulations = [ "squares", "sift_twoPlayer",   "pixelSets",   "sift_saliency",    "slic"]
 
 
 #######################################################
 #  get parameters from network_configuration
 #######################################################
 
-(featureDims,span,numSpan,NN,dataBasics,directory_model_string,directory_statistics_string,directory_pic_string,filterSize) = network_parameters(dataset)
+(imageEnlargeProportion,featureDims,span,numSpan,NN,dataBasics,directory_model_string,directory_statistics_string,directory_pic_string,filterSize) = network_parameters(dataset)
 
 
 #######################################################

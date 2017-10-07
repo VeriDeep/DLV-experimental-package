@@ -530,7 +530,9 @@ def get_activations(model, layer, X_batch):
     
 def predictWithImage(model,newInput):
 
-    if len(newInput.shape) == 2: 
+    if len(newInput.shape) == 2 and K.backend() == 'tensorflow': 
+        newInput2 = np.expand_dims(np.expand_dims(newInput, axis=2), axis=0)
+    elif len(newInput.shape) == 2 and K.backend() == 'theano': 
         newInput2 = np.expand_dims(np.expand_dims(newInput, axis=0), axis=0)
     else: 
         newInput2 = np.expand_dims(newInput, axis=0)

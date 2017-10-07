@@ -20,11 +20,11 @@ def usual_configuration(dataset):
 
         ## control by distance
         #controlledSearch = ("euclidean",0.3)
-        controlledSearch = ("L1",0.03)
+        controlledSearch = ("L1",0.1)
         #controlledSearch = ("Percentage",0.12)
         #controlledSearch = ("NumDiffs",30)
         
-        effectiveConfidenceWhenChanging = 0.8
+        effectiveConfidenceWhenChanging = 0.0
         
         # MCTS_level_maximal_time
         MCTS_level_maximal_time = 30
@@ -38,7 +38,7 @@ def usual_configuration(dataset):
     
         # which image to start with or work with 
         # from the database
-        startIndexOfImage = 597
+        startIndexOfImage = 598
         
         # the start layer to work from 
         startLayer = -1
@@ -51,7 +51,7 @@ def usual_configuration(dataset):
         
         # MCTS_level_maximal_time
         MCTS_level_maximal_time = 30
-        MCTS_all_maximal_time = 120
+        MCTS_all_maximal_time = 240
         MCTS_multi_samples = 1
  
         explorationRate = 0.5        

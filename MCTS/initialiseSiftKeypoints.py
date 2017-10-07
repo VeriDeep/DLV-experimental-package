@@ -17,11 +17,111 @@ from basics import *
 from networkBasics import *
 from configuration import * 
 
+############################################################
+#
+#  initialise SIFT-based manipulations for two-player game
+#
+################################################################
+
+
+def initialiseSiftKeypointsTwoPlayer(model,image,manipulated):
+
+    numOfPoints = 100
+    
+    image1 = copy.deepcopy(image)
+    if np.max(image1) <= 1: 
+        image1 = (image1*255).astype(np.uint8)
+    else: 
+        image1 = image1.astype(np.uint8)
+    #if len(image1.shape) > 2: 
+    #    image1 = (image1*255).transpose(1, 2, 0)
+    if max(image1.shape) < 100: 
+        image1 = cv2.resize(image1, (0,0), fx=imageEnlargeProportion, fy=imageEnlargeProportion) 
+        #kp, des = SIFT_Filtered(image1)
+        kp, dist = SIFT_Filtered_twoPlayer(image1)
+
+            #print "%s:%s"%(i,des[i])
+    else: 
+        kp, dist = SIFT_Filtered_twoPlayer(image1)
+                  
+    print("%s keypoints are found. "%(len(kp)))
+    
+    actions = {}
+    actions[0] = kp
+    s = 1
+    for k in kp: 
+        allRegions = []
+        points = getPoints_twoPlayer(image1, dist, kp, numOfPoints)
+        num = len(points)/featureDims  # numOfFeatures
+        for i in range(len(points)):
+        #     print kp[i].pt
+            points[i] = (points[i][0]/imageEnlargeProportion, points[i][1]/imageEnlargeProportion)
+        i = 0
+        while i < num :
+            nextSpan = {}
+            nextNumSpan = {}    
+            ls = [] 
+            for j in range(featureDims): 
+                x = int(points[i*featureDims + j][0])
+                y = int(points[i*featureDims + j][1])
+                if len(image1.shape) == 2:  
+                    ls.append((x,y))
+                elif K.backend() == 'tensorflow': 
+                    ls.append((x,y,0))
+                    ls.append((x,y,1))
+                    ls.append((x,y,2))
+                else: 
+                    ls.append((0,x,y))
+                    ls.append((1,x,y))
+                    ls.append((2,x,y))
+            
+            for j in ls: 
+                nextSpan[j] = span
+                nextNumSpan[j] = numSpan
+            
+            oneRegion = (nextSpan,nextNumSpan,featureDims)
+            allRegions.append(oneRegion)
+            i += 1
+        actions[s] = allRegions
+        s += 1
+        print("%s manipulations have been initialised for keypoint (%s,%s)."%(len(allRegions), k.pt[0]/imageEnlargeProportion, k.pt[1]/imageEnlargeProportion))
+    return actions
+        
+def SIFT_Filtered_twoPlayer(image): #threshold=0.0):
+    #image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    #image = image.astype(np.uint8)
+    #equ = cv2.equalizeHist(image)
+    #image = np.hstack((image,equ))
+    sift = cv2.SIFT() # cv2.SURF(400) #    cv2.xfeatures2d.SIFT_create()
+    kp, des = sift.detectAndCompute(image,None)
+    return  kp, getDistribution(image, kp)
+    
+def getPoints_twoPlayer(image, dist, kps, n): 
+    dist1 = np.zeros(dist.shape)
+    for k in kps: 
+        a = np.array((k.pt[0],k.pt[1]))
+        for i in range(len(dist)): 
+            for j in range(len(dist[0])): 
+                b = np.array((i,j))
+                dist2 = np.linalg.norm(a - b)
+                if dist2 < k.size: 
+                    dist1[i][j] = dist[i][j]
+    dist1 = dist1 / np.sum(dist1)
+
+    indices = [] #np.zeros(dist.shape)
+    for i in range(len(dist)):
+        for j in range(len(dist[0])): 
+            indices.append(i*len(dist)+j) # [i][j] = (i,j)
+    l =  np.random.choice(indices, n, p = dist1.flatten())
+    l2 = []
+    for ind in l: 
+        l2.append(getPixelLoc(ind,image))
+    return list(set(l2))
     
     
 ############################################################
 #
-#  preparation functions, selecting heuristics
+#  initialise SIFT-based manipulations for single-player game
 #
 ################################################################
 
@@ -29,18 +129,24 @@ from configuration import *
 def initialiseSiftKeypoints(model,image,manipulated):
 
     numOfPoints = 100
-
+    
     image1 = copy.deepcopy(image)
+    if np.max(image1) <= 1: 
+        image1 = (image1*255).astype(np.uint8)
+    else: 
+        image1 = image1.astype(np.uint8)
     #if len(image1.shape) > 2: 
     #    image1 = (image1*255).transpose(1, 2, 0)
-    image1=(image1*255).astype(np.uint8)
-    image1 = cv2.resize(image1, (0,0), fx=2, fy=2) 
-    #kp, des = SIFT_Filtered(image1)
-    kp = SIFT_Filtered(image1,numOfPoints)
-    for i in range(len(kp)):
-    #     print kp[i].pt
-        kp[i] = (kp[i][0]/2, kp[i][1]/2)
-        #print "%s:%s"%(i,des[i])
+    if max(image1.shape) < 100: 
+        image1 = cv2.resize(image1, (0,0), fx=imageEnlargeProportion, fy=imageEnlargeProportion) 
+        #kp, des = SIFT_Filtered(image1)
+        dist, kp = SIFT_Filtered(image1,numOfPoints)
+        for i in range(len(kp)):
+        #     print kp[i].pt
+            kp[i] = (kp[i][0]/imageEnlargeProportion, kp[i][1]/imageEnlargeProportion)
+            #print "%s:%s"%(i,des[i])
+    else: 
+        dist, kp = SIFT_Filtered(image1,numOfPoints)
          
     print("%s keypoints are found. "%(len(kp)))
     
@@ -98,25 +204,25 @@ def SIFT_Filtered(image, numOfPoints): #threshold=0.0):
 
 
 def getPoints(image, kp, n): 
-    values = getValues(image, kp)
-    indices = [] #np.zeros(values.shape)
-    for i in range(len(values)):
-        for j in range(len(values[0])): 
-            indices.append(i*len(values)+j) # [i][j] = (i,j)
-    l =  np.random.choice(indices,n, p = values.flatten()  / np.sum(values))
+    dist = getDistribution(image, kp)
+    indices = [] #np.zeros(dist.shape)
+    for i in range(len(dist)):
+        for j in range(len(dist[0])): 
+            indices.append(i*len(dist)+j) # [i][j] = (i,j)
+    l =  np.random.choice(indices, n, p = dist.flatten())
     l2 = []
     for ind in l: 
         l2.append(getPixelLoc(ind,image))
-    return list(set(l2))
-    #print("value = %s"%(values))
-    #print np.max(values)
-    #print values.flatten().reshape(values.shape)
+    return dist, list(set(l2))
+    #print("value = %s"%(dist))
+    #print np.max(dist)
+    #print dist.flatten().reshape(dist.shape)
 
 
 def getPixelLoc(ind, image):
     return (ind/len(image), ind%len(image))
 
-def getValues(image, kp):
+def getDistribution(image, kp):
 
     import matplotlib.pyplot as plt
     import scipy
@@ -124,16 +230,16 @@ def getValues(image, kp):
     import scipy.stats
     import numpy.linalg
     
-    values = np.zeros(image.shape[:2])
+    dist = np.zeros(image.shape[:2])
     for  k in kp: 
         a = np.array((k.pt[0],k.pt[1]))
-        for i in range(len(values)): 
-            for j in range(len(values[0])): 
+        for i in range(len(dist)): 
+            for j in range(len(dist[0])): 
                 b = np.array((i,j))
-                dist = numpy.linalg.norm(a - b)
-                values[i][j] += scipy.stats.norm.pdf(dist, loc=0.0, scale=k.size)
+                dist2 = numpy.linalg.norm(a - b)
+                dist[i][j] += scipy.stats.norm.pdf(dist2, loc=0.0, scale=k.size) * k.response
     
-    return values
+    return dist / np.sum(dist)
                 
                 
     '''

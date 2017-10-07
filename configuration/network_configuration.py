@@ -37,7 +37,8 @@ def network_parameters(dataset):
         directory_statistics_string = makedirectory("data/mnist_statistics")
         directory_pic_string = makedirectory("data/mnist_pic")
         
-        featureDims = 4 # 20 #  20
+        imageEnlargeProportion = 5
+        featureDims = 2 # 20 #  20
         span = 255/float(255)
         numSpan = 1
 
@@ -49,7 +50,8 @@ def network_parameters(dataset):
         directory_statistics_string = makedirectory("data/cifar10_statistics")
         directory_pic_string = makedirectory("data/cifar10_pic")
  
-        featureDims = 4
+        imageEnlargeProportion = 2
+        featureDims = 1
         span = 255/float(255)
         numSpan = 1
         
@@ -61,6 +63,7 @@ def network_parameters(dataset):
         directory_statistics_string = makedirectory("data/gtsrb_statistics")
         directory_pic_string = makedirectory("data/gtsrb_pic")
         
+        imageEnlargeProportion = 2
         featureDims = 1 # 9 # 81 #
         span = 255/float(255)
         numSpan = 1
@@ -73,11 +76,12 @@ def network_parameters(dataset):
         directory_statistics_string = makedirectory("data/imageNet_statistics")
         directory_pic_string = makedirectory("data/imageNet_pic")
 
-        featureDims = 255
+        imageEnlargeProportion = 2
+        featureDims = 1
         span = 125
         numSpan = 1
 
-    return (featureDims,span,numSpan,NN,dataBasics,directory_model_string,directory_statistics_string,directory_pic_string,filterSize)
+    return (imageEnlargeProportion,featureDims,span,numSpan,NN,dataBasics,directory_model_string,directory_statistics_string,directory_pic_string,filterSize)
 
 def makedirectory(directory_name):
     if not os.path.exists(directory_name):

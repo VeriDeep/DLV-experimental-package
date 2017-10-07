@@ -115,7 +115,7 @@ class mcts:
             allChildren = initialiseSquares(self.autoencoder,self.activations,[])
         elif self.manipulationType == "slic": 
             allChildren = superPixel_slic(self.activations)
-        elif self.manipulationType == "sift": 
+        elif self.manipulationType == "sift_saliency": 
             allChildren = initialiseSiftKeypoints(self.autoencoder,self.activations,[])
             
         for i in range(len(allChildren)): 
