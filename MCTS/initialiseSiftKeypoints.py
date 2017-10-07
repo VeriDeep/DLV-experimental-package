@@ -26,8 +26,6 @@ import collections
 
 
 def initialiseSiftKeypointsTwoPlayer(model,image,manipulated):
-
-    numOfPoints = 100
     
     image1 = copy.deepcopy(image)
     if np.max(image1) <= 1: 
@@ -39,11 +37,11 @@ def initialiseSiftKeypointsTwoPlayer(model,image,manipulated):
     if max(image1.shape) < 100: 
         image1 = cv2.resize(image1, (0,0), fx=imageEnlargeProportion, fy=imageEnlargeProportion) 
         #kp, des = SIFT_Filtered(image1)
-        kp, dist = SIFT_Filtered_twoPlayer(image1)
+        kp = SIFT_Filtered_twoPlayer(image1)
 
             #print "%s:%s"%(i,des[i])
     else: 
-        kp, dist = SIFT_Filtered_twoPlayer(image1)
+        kp = SIFT_Filtered_twoPlayer(image1)
                   
     print("%s keypoints are found. "%(len(kp)))
     
@@ -51,7 +49,8 @@ def initialiseSiftKeypointsTwoPlayer(model,image,manipulated):
     actions[0] = kp
     s = 1
     kp2 = []
-    points_all = getPoints_twoPlayer(image1, dist, kp, numOfPoints)
+    points_all = getPoints_twoPlayer(image1, kp)
+    print("The pixels are partitioned with respect to keypoints. ")
     for k, points in points_all.iteritems(): 
         allRegions = []
         for i in range(len(points)):
@@ -88,7 +87,7 @@ def initialiseSiftKeypointsTwoPlayer(model,image,manipulated):
         actions[s] = allRegions
         kp2.append(kp[s-1])
         s += 1
-        nprint("%s manipulations have been initialised for keypoint (%s,%s)."%(len(allRegions), kp[k-1].pt[0]/imageEnlargeProportion, kp[k-1].pt[1]/imageEnlargeProportion))
+        print("%s manipulations have been initialised for keypoint (%s,%s)."%(len(allRegions), kp[k-1].pt[0]/imageEnlargeProportion, kp[k-1].pt[1]/imageEnlargeProportion))
     actions[0] = kp2
     return actions
         
@@ -99,9 +98,9 @@ def SIFT_Filtered_twoPlayer(image): #threshold=0.0):
     #image = np.hstack((image,equ))
     sift = cv2.SIFT() # cv2.SURF(400) #    cv2.xfeatures2d.SIFT_create()
     kp, des = sift.detectAndCompute(image,None)
-    return  kp, getDistribution(image, kp)
+    return  kp
     
-def getPoints_twoPlayer(image, dist, kps, n): 
+def getPoints_twoPlayer(image, kps): 
     import operator
     import random
     points = {}
@@ -110,8 +109,8 @@ def getPoints_twoPlayer(image, dist, kps, n):
             ps = {}
             for i in range(1, len(kps)+1): 
                k = kps[i-1]
-               dist = np.linalg.norm(np.array([x,y]) - np.array([k.pt[0],k.pt[1]]))
-               ps[i] = norm.pdf(dist, loc=0.0, scale=k.size)
+               dist2 = np.linalg.norm(np.array([x,y]) - np.array([k.pt[0],k.pt[1]]))
+               ps[i] = norm.pdf(dist2, loc=0.0, scale=k.size)
             maxk = max(ps.iteritems(), key=operator.itemgetter(1))[0]
             if maxk in points.keys(): 
                 points[maxk].append((x,y))
@@ -265,14 +264,17 @@ def getDistribution(image, kp):
     import numpy.linalg
     
     dist = np.zeros(image.shape[:2])
+    i = 1
     for  k in kp: 
+        print(i)
+        i += 1
         a = np.array((k.pt[0],k.pt[1]))
         for i in range(len(dist)): 
             for j in range(len(dist[0])): 
                 b = np.array((i,j))
                 dist2 = numpy.linalg.norm(a - b)
                 dist[i][j] += scipy.stats.norm.pdf(dist2, loc=0.0, scale=k.size) * k.response
-    
+                    
     return dist / np.sum(dist)
                 
                 

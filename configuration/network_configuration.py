@@ -65,7 +65,7 @@ def network_parameters(dataset):
         directory_statistics_string = makedirectory("data/gtsrb_statistics")
         directory_pic_string = makedirectory("data/gtsrb_pic")
         
-        maxNumOfPointPerKeyPoint = 100
+        maxNumOfPointPerKeyPoint = 0
         imageEnlargeProportion = 2
         featureDims = 1 # 9 # 81 #
         span = 255/float(255)
@@ -80,7 +80,7 @@ def network_parameters(dataset):
         directory_pic_string = makedirectory("data/imageNet_pic")
 
         maxNumOfPointPerKeyPoint = 100
-        imageEnlargeProportion = 2
+        imageEnlargeProportion = 1
         featureDims = 1
         span = 125
         numSpan = 1
