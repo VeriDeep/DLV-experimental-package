@@ -18,7 +18,7 @@ import math
 from configuration import *
 
 from inputManipulation import applyManipulation
-from basics import mergeTwoDicts, diffPercent, euclideanDistance, l1Distance, numDiffs, diffImage
+from basics import mergeTwoDicts, diffPercent, euclideanDistance, l1Distance, numDiffs, diffImage, l0Distance
 
 from decisionTree import decisionTree
 from initialisePixelSets import initialisePixelSets

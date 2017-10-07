@@ -34,7 +34,7 @@ whichMode = "read"
 trainingModel = "normal"
 
 # the number of images to be handled 
-dataProcessingBatchNum = 1
+dataProcessingBatchNum = 10
 
 
 manipulations = [ "sift_twoPlayer",  "pixelSets",  "squares",    "sift_saliency",    "slic"]
@@ -44,7 +44,7 @@ manipulations = [ "sift_twoPlayer",  "pixelSets",  "squares",    "sift_saliency"
 #  get parameters from network_configuration
 #######################################################
 
-(imageEnlargeProportion,featureDims,span,numSpan,NN,dataBasics,directory_model_string,directory_statistics_string,directory_pic_string,filterSize) = network_parameters(dataset)
+(maxNumOfPointPerKeyPoint,imageEnlargeProportion,featureDims,span,numSpan,NN,dataBasics,directory_model_string,directory_statistics_string,directory_pic_string,filterSize) = network_parameters(dataset)
 
 
 #######################################################

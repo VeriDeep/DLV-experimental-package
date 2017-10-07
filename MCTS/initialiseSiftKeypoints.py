@@ -85,8 +85,8 @@ def initialiseSiftKeypointsTwoPlayer(model,image,manipulated):
             allRegions.append(oneRegion)
             i += 1
         actions[s] = allRegions
-        s += 1
         kp2.append(kp[s-1])
+        s += 1
         print("%s manipulations have been initialised for keypoint (%s,%s)."%(len(allRegions), kp[k-1].pt[0]/imageEnlargeProportion, kp[k-1].pt[1]/imageEnlargeProportion))
     actions[0] = kp2
     return actions
@@ -102,6 +102,7 @@ def SIFT_Filtered_twoPlayer(image): #threshold=0.0):
     
 def getPoints_twoPlayer(image, dist, kps, n): 
     import operator
+    import random
     points = {}
     for x in range(len(image)): 
        for y in range(len(image[0])): 
@@ -114,6 +115,12 @@ def getPoints_twoPlayer(image, dist, kps, n):
             if maxk in points.keys(): 
                 points[maxk].append((x,y))
             else: points[maxk] = [(x,y)]
+    if maxNumOfPointPerKeyPoint > 0: 
+        for mk in points.keys():
+            beginingNum = len(points[mk])
+            for i in range(beginingNum - maxNumOfPointPerKeyPoint): 
+                points[mk].remove(random.choice(points[mk]))
+
     return points
 
     
