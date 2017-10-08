@@ -270,7 +270,7 @@ def getDistribution(image, kp):
     dist = np.zeros(image.shape[:2])
     i = 1
     for  k in kp: 
-        print(i)
+        #print(i)
         i += 1
         a = np.array((k.pt[0],k.pt[1]))
         for i in range(len(dist)): 

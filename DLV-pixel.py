@@ -54,7 +54,7 @@ def main():
     dc = dataCollection("%s_%s_%s"%(startIndexOfImage,dataProcessingBatchNum,manipulations[0]))
     succNum = 0 
     for i in range(dataProcessingBatchNum): 
-        re = handleOne(model,autoencoder,startIndexOfImage+i,manipulations[0],dc)
+        re = handleOne(model,autoencoder,startIndexOfImage+i,manipulations[0],dc,twoPlayer_mode[0])
         if re == True: succNum += 1
     dc.addSuccPercent(succNum/float(dataProcessingBatchNum))
     dc.provideDetails()
@@ -68,7 +68,7 @@ def main():
 #
 ############################################################################
 
-def handleOne(model,autoencoder,startIndexOfImage,manipulationType,dc):
+def handleOne(model,autoencoder,startIndexOfImage,manipulationType,dc,player_mode):
         
     print("start working on image %s ... "%startIndexOfImage)
         
@@ -105,7 +105,7 @@ def handleOne(model,autoencoder,startIndexOfImage,manipulationType,dc):
     
     # initialise a search tree
     if manipulationType == "sift_twoPlayer": 
-        st= mcts_twoPlayer(model,autoencoder,image,activations,startLayer)
+        st= mcts_twoPlayer(model,autoencoder,image,activations,startLayer,player_mode)
     else: 
         st = mcts(model,autoencoder,image,activations,startLayer)
     if startLayer > -1: 

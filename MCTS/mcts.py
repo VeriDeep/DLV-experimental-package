@@ -18,7 +18,7 @@ import math
 from configuration import *
 
 from inputManipulation import applyManipulation
-from basics import mergeTwoDicts, diffPercent, euclideanDistance, l1Distance, numDiffs, diffImage
+from basics import mergeTwoDicts, diffPercent, euclideanDistance, l1Distance, numDiffs, diffImage, l0Distance
 
 from decisionTree import decisionTree
 from initialisePixelSets import initialisePixelSets
@@ -120,7 +120,7 @@ class mcts:
             
         for i in range(len(allChildren)): 
             self.actions[i] = allChildren[i] 
-        print("%s actions have been initialised. "%(len(self.actions)))
+        #print("%s actions have been initialised. "%(len(self.actions)))
         # initialise decision tree
         self.decisionTree = decisionTree(self.model, self.actions,self.activations, "decision")
         
@@ -406,6 +406,10 @@ class mcts:
     def l1Dist(self,index): 
         activations1 = applyManipulation(self.activations,self.spans[index],self.numSpans[index])
         return l1Distance(self.activations,activations1)
+        
+    def l0Dist(self,index): 
+        activations1 = applyManipulation(self.activations,self.spans[index],self.numSpans[index])
+        return l0Distance(self.activations,activations1)
         
     def diffImage(self,index): 
         activations1 = applyManipulation(self.activations,self.spans[index],self.numSpans[index])

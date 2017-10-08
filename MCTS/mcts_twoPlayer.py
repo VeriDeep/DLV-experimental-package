@@ -31,7 +31,7 @@ from superPixels import superPixel_slic
 
 class mcts_twoPlayer:
 
-    def __init__(self, model, autoencoder, image, activations, layer):
+    def __init__(self, model, autoencoder, image, activations, layer, player_mode):
         self.image = image
         self.activations = activations
         self.model = model
@@ -39,6 +39,7 @@ class mcts_twoPlayer:
         # current layer
         self.layer = layer
         self.manipulationType = "sift_twoPlayer"
+        self.player_mode = player_mode
 
         self.cost = {}
         self.numberOfVisited = {}
@@ -197,7 +198,14 @@ class mcts_twoPlayer:
             for childIndex in self.children[index]: 
                 allValues[childIndex] = (self.cost[childIndex] / float(self.numberOfVisited[childIndex])) + explorationRate * math.sqrt(math.log(self.numberOfVisited[index]) / float(self.numberOfVisited[childIndex]))
             #nextIndex = max(allValues.iteritems(), key=operator.itemgetter(1))[0]
-            nextIndex = np.random.choice(allValues.keys(), 1, p = [ x/sum(allValues.values()) for x in allValues.values()])[0]
+            if self.player_mode == "adversary" and self.keypoint[index] == 0 : 
+                allValues2 = {}
+                for k,v in allValues.iteritems(): 
+                     allValues2[k] = 1 / float(allValues[k])
+                nextIndex = np.random.choice(allValues.keys(), 1, p = [ x/sum(allValues2.values()) for x in allValues2.values()])[0]
+            else: 
+                nextIndex = np.random.choice(allValues.keys(), 1, p = [ x/sum(allValues.values()) for x in allValues.values()])[0]
+
             if self.keypoint[index] in self.keypoint.keys() and self.keypoint[index] != 0 : 
                 self.usedActionsID[self.keypoint[index]].append(self.indexToActionID[index])
             elif self.keypoint[index] != 0 : 
