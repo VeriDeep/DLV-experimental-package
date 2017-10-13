@@ -23,6 +23,7 @@ def usual_configuration(dataset):
         controlledSearch = ("L1",0.1)
         #controlledSearch = ("Percentage",0.12)
         #controlledSearch = ("NumDiffs",30)
+        distanceConst = 0.04
         
         effectiveConfidenceWhenChanging = 0.0
         
@@ -46,6 +47,7 @@ def usual_configuration(dataset):
         ## control by distance
         #controlledSearch = ("euclidean",0.3)
         controlledSearch = ("L1",0.02)
+        distanceConst = 0
         
         effectiveConfidenceWhenChanging = 0.8
         
@@ -70,6 +72,7 @@ def usual_configuration(dataset):
         controlledSearch = ("L1",0.03)
         #controlledSearch = ("Percentage",0.12)
         #controlledSearch = ("NumDiffs",30)
+        distanceConst = 0.04
         
         effectiveConfidenceWhenChanging = 0.8
         
@@ -92,6 +95,7 @@ def usual_configuration(dataset):
         ## control by distance
         controlledSearch = ("L1",0.5)
         #controlledSearch = ("L1",0.05)
+        distanceConst = 0.04
         
         effectiveConfidenceWhenChanging = 0.0
         
@@ -102,4 +106,4 @@ def usual_configuration(dataset):
 
         explorationRate = 0.5
     
-    return (startIndexOfImage,startLayer,explorationRate,controlledSearch,MCTS_all_maximal_time, MCTS_level_maximal_time,MCTS_multi_samples,effectiveConfidenceWhenChanging)
+    return (distanceConst,startIndexOfImage,startLayer,explorationRate,controlledSearch,MCTS_all_maximal_time, MCTS_level_maximal_time,MCTS_multi_samples,effectiveConfidenceWhenChanging)

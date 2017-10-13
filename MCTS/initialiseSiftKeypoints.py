@@ -238,6 +238,7 @@ def SIFT_Filtered(image, numOfPoints): #threshold=0.0):
 
     return zip(*actions)
     '''
+    
 
 
 def getPoints(image, kp, n): 

@@ -18,7 +18,7 @@ import math
 from configuration import *
 
 from inputManipulation import applyManipulation
-from basics import mergeTwoDicts, diffPercent, euclideanDistance, l1Distance, numDiffs, diffImage, l0Distance
+from basics import *
 
 from decisionTree import decisionTree
 from initialisePixelSets import initialisePixelSets
@@ -28,6 +28,11 @@ from initialiseSiftKeypoints import initialiseSiftKeypointsTwoPlayer
 from re_training import re_training
 from analyseAdv import analyseAdv
 from superPixels import superPixel_slic
+
+
+def l1DistanceFunc(image1,image2):  
+    if distanceConst == 0: return l1Distance(image1,image2)
+    else: return l1DistanceWithKL(distanceConst,image1,image2)
 
 class mcts_twoPlayer:
 
@@ -336,7 +341,7 @@ class mcts_twoPlayer:
             termValue = 0.0
             termByDist = dist < 1 - distVal
         elif distMethod == "L1": 
-            dist = 1 - l1Distance(activations1,self.activations) 
+            dist = 1 - l1DistanceFunc(activations1,self.activations) 
             termValue = 0.0
             termByDist = dist < 1 - distVal
         elif distMethod == "Percentage": 
@@ -354,6 +359,11 @@ class mcts_twoPlayer:
         if newClass != self.originalClass and newConfident > effectiveConfidenceWhenChanging:
             # and newClass == dataBasics.next_index(self.originalClass,self.originalClass): 
             nprint("sampling a path ends in a terminal node with self.depth %s... "%self.depth)
+            
+            #print("L1 distance: %s"%(l1Distance(self.activations,activations1)))
+            #print(self.activations.shape)
+            #print(activations1.shape)
+            #print("L1 distance with KL: %s"%(withKL(l1Distance(self.activations,activations1),self.activations,activations1)))
             
             (self.spansPath,self.numSpansPath) = self.scrutinizePath(self.spansPath,self.numSpansPath,newClass)
             
@@ -436,7 +446,7 @@ class mcts_twoPlayer:
         if distMethod == "euclidean": 
             dist = euclideanDistance(activations1,self.activations) 
         elif distMethod == "L1": 
-            dist = l1Distance(activations1,self.activations) 
+            dist = l1DistanceFunc(activations1,self.activations) 
         elif distMethod == "Percentage": 
             dist = diffPercent(activations1,self.activations)
         elif distMethod == "NumDiffs": 
@@ -457,7 +467,7 @@ class mcts_twoPlayer:
         
     def l1Dist(self,index): 
         activations1 = applyManipulation(self.activations,self.spans[index],self.numSpans[index])
-        return l1Distance(self.activations,activations1)
+        return l1DistanceFunc(self.activations,activations1)
         
     def l0Dist(self,index): 
         activations1 = applyManipulation(self.activations,self.spans[index],self.numSpans[index])

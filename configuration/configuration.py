@@ -55,7 +55,7 @@ twoPlayer_mode = ["cooperator"] #, "adversary"] # "nature"
 #######################################################
 
 
-(startIndexOfImage,startLayer, explorationRate,controlledSearch,MCTS_all_maximal_time, MCTS_level_maximal_time,MCTS_multi_samples,effectiveConfidenceWhenChanging) = usual_configuration(dataset)
+(distanceConst,startIndexOfImage,startLayer, explorationRate,controlledSearch,MCTS_all_maximal_time, MCTS_level_maximal_time,MCTS_multi_samples,effectiveConfidenceWhenChanging) = usual_configuration(dataset)
     
 
 #######################################################
