@@ -46,10 +46,10 @@ def usual_configuration(dataset):
         
         ## control by distance
         #controlledSearch = ("euclidean",0.3)
-        controlledSearch = ("L1",0.02)
+        controlledSearch = ("L1",10)
         distanceConst = 0
         
-        effectiveConfidenceWhenChanging = 0.8
+        effectiveConfidenceWhenChanging = 0.0
         
         # MCTS_level_maximal_time
         MCTS_level_maximal_time = 30

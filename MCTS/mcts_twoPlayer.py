@@ -211,7 +211,7 @@ class mcts_twoPlayer:
             else: 
                 nextIndex = np.random.choice(allValues.keys(), 1, p = [ x/sum(allValues.values()) for x in allValues.values()])[0]
 
-            if self.keypoint[index] in self.keypoint.keys() and self.keypoint[index] != 0 : 
+            if self.keypoint[index] in self.usedActionsID.keys() and self.keypoint[index] != 0 : 
                 self.usedActionsID[self.keypoint[index]].append(self.indexToActionID[index])
             elif self.keypoint[index] != 0 : 
                 self.usedActionsID[self.keypoint[index]] = [self.indexToActionID[index]]
@@ -341,7 +341,7 @@ class mcts_twoPlayer:
             termValue = 0.0
             termByDist = dist < 1 - distVal
         elif distMethod == "L1": 
-            dist = 1 - l1DistanceFunc(activations1,self.activations) 
+            dist = 1000 - l1DistanceFunc(activations1,self.activations) 
             termValue = 0.0
             termByDist = dist < 1 - distVal
         elif distMethod == "Percentage": 
