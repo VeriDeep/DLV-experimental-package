@@ -49,6 +49,8 @@ def initialiseSiftKeypointsTwoPlayer(model,image,manipulated):
     actions[0] = kp
     s = 1
     kp2 = []
+    image0 = np.zeros(image1.shape)
+    numOfmanipulations = 0 
     points_all = getPoints_twoPlayer(image1, kp)
     print("The pixels are partitioned with respect to keypoints. ")
     for k, points in points_all.iteritems(): 
@@ -66,29 +68,32 @@ def initialiseSiftKeypointsTwoPlayer(model,image,manipulated):
             for j in range(featureDims): 
                 x = int(points[i*featureDims + j][0])
                 y = int(points[i*featureDims + j][1])
-                if len(image1.shape) == 2:  
+                if image0[x][y] == 0 and len(image1.shape) == 2:  
                     ls.append((x,y))
-                elif K.backend() == 'tensorflow': 
+                elif image0[x][y] == 0 and K.backend() == 'tensorflow': 
                     ls.append((x,y,0))
                     ls.append((x,y,1))
                     ls.append((x,y,2))
-                else: 
+                elif image0[x][y] == 0 and K.backend() == 'theano':  
                     ls.append((0,x,y))
                     ls.append((1,x,y))
                     ls.append((2,x,y))
+                image0[x][y] = 1
             
-            for j in ls: 
-                nextSpan[j] = span
-                nextNumSpan[j] = numSpan
-            
-            oneRegion = (nextSpan,nextNumSpan,featureDims)
-            allRegions.append(oneRegion)
+            if len(ls) > 0: 
+                for j in ls: 
+                    nextSpan[j] = span
+                    nextNumSpan[j] = numSpan            
+                oneRegion = (nextSpan,nextNumSpan,featureDims)
+                allRegions.append(oneRegion)
             i += 1
         actions[s] = allRegions
         kp2.append(kp[s-1])
         s += 1
-        print("%s manipulations have been initialised for keypoint (%s,%s)."%(len(allRegions), kp[k-1].pt[0]/imageEnlargeProportion, kp[k-1].pt[1]/imageEnlargeProportion))
+        print("%s manipulations have been initialised for keypoint (%s,%s), whose response is %s."%(len(allRegions), int(kp[k-1].pt[0]/imageEnlargeProportion), int(kp[k-1].pt[1]/imageEnlargeProportion),kp[k-1].response))
+        numOfmanipulations += len(allRegions)
     actions[0] = kp2
+    print("the number of all manipulations initialised: %s\n"%(numOfmanipulations))
     return actions
         
 def SIFT_Filtered_twoPlayer(image): #threshold=0.0):
