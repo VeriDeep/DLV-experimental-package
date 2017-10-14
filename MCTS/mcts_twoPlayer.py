@@ -192,7 +192,7 @@ class mcts_twoPlayer:
     def bestChild(self,index):
         allValues = {}
         for childIndex in self.children[index]: 
-            allValues[childIndex] = self.cost[childIndex]
+            allValues[childIndex] = self.cost[childIndex] / float(self.numberOfVisited[childIndex])
         nprint("finding best children from %s"%(allValues))
         return max(allValues.iteritems(), key=operator.itemgetter(1))[0]
         
@@ -337,7 +337,7 @@ class mcts_twoPlayer:
         (newClass,newConfident) = self.predictWithActivations(activations1)
         (distMethod,distVal) = controlledSearch
         if distMethod == "euclidean": 
-            dist = 1 - euclideanDistance(activations1,self.activations) 
+            dist = 1000 - euclideanDistance(activations1,self.activations) 
             termValue = 0.0
             termByDist = dist < 1 - distVal
         elif distMethod == "L1": 

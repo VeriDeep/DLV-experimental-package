@@ -5,6 +5,9 @@ Define paramters
 author: Xiaowei Huang
 """
 
+import math
+
+
 def usual_configuration(dataset):
 
         
@@ -12,15 +15,15 @@ def usual_configuration(dataset):
 
         # which image to start with or work with 
         # from the database
-        startIndexOfImage = 2241
+        startIndexOfImage = 2261
         
         # the layer to work with 
         # -1 is input layer
         startLayer = -1
 
         ## control by distance
-        #controlledSearch = ("euclidean",0.3)
-        controlledSearch = ("L1",0.1)
+        controlledSearch = ("euclidean",4)
+        #controlledSearch = ("L1",10)
         #controlledSearch = ("Percentage",0.12)
         #controlledSearch = ("NumDiffs",30)
         distanceConst = 0.04
@@ -33,7 +36,7 @@ def usual_configuration(dataset):
         MCTS_multi_samples = 1
         
         # tunable parameter for MCTS
-        explorationRate = 0.5
+        explorationRate = math.sqrt(2)
             
     elif dataset == "cifar10": 
     
@@ -46,7 +49,7 @@ def usual_configuration(dataset):
         
         ## control by distance
         #controlledSearch = ("euclidean",0.3)
-        controlledSearch = ("L1",10)
+        controlledSearch = ("L2",10)
         distanceConst = 0
         
         effectiveConfidenceWhenChanging = 0.0
@@ -56,7 +59,7 @@ def usual_configuration(dataset):
         MCTS_all_maximal_time = 120
         MCTS_multi_samples = 1
  
-        explorationRate = 0.5        
+        explorationRate = math.sqrt(2)        
         
     elif dataset == "gtsrb": 
 
@@ -74,14 +77,14 @@ def usual_configuration(dataset):
         #controlledSearch = ("NumDiffs",30)
         distanceConst = 0.04
         
-        effectiveConfidenceWhenChanging = 0.8
+        effectiveConfidenceWhenChanging = 0.0
         
         # MCTS_level_maximal_time
         MCTS_level_maximal_time = 30
         MCTS_all_maximal_time = 120
         MCTS_multi_samples = 1
 
-        explorationRate = 0.5
+        explorationRate = math.sqrt(2)
 
     elif dataset == "imageNet": 
     
@@ -104,6 +107,6 @@ def usual_configuration(dataset):
         MCTS_all_maximal_time = 120
         MCTS_multi_samples = 1
 
-        explorationRate = 0.5
+        explorationRate = math.sqrt(2)
     
     return (distanceConst,startIndexOfImage,startLayer,explorationRate,controlledSearch,MCTS_all_maximal_time, MCTS_level_maximal_time,MCTS_multi_samples,effectiveConfidenceWhenChanging)
