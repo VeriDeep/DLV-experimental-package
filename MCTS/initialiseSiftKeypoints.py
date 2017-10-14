@@ -49,7 +49,10 @@ def initialiseSiftKeypointsTwoPlayer(model,image,manipulated):
     actions[0] = kp
     s = 1
     kp2 = []
-    image0 = np.zeros(image1.shape)
+    if K.backend() == 'tensorflow': 
+        image0 = np.zeros(image1.shape[:2])
+    else: 
+        image0 = np.zeros(image1.shape[1:])
     numOfmanipulations = 0 
     points_all = getPoints_twoPlayer(image1, kp)
     print("The pixels are partitioned with respect to keypoints. ")

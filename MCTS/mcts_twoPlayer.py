@@ -341,7 +341,7 @@ class mcts_twoPlayer:
             termValue = 0.0
             termByDist = dist < 1 - distVal
         elif distMethod == "L1": 
-            dist = 1000 - l1DistanceFunc(activations1,self.activations) 
+            dist = 1000 - l1Distance(activations1,self.activations) 
             termValue = 0.0
             termByDist = dist < 1 - distVal
         elif distMethod == "Percentage": 

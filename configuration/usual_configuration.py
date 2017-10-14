@@ -42,14 +42,14 @@ def usual_configuration(dataset):
     
         # which image to start with or work with 
         # from the database
-        startIndexOfImage = 621
+        startIndexOfImage = 641
         
         # the start layer to work from 
         startLayer = -1
         
         ## control by distance
         #controlledSearch = ("euclidean",0.3)
-        controlledSearch = ("L2",10)
+        controlledSearch = ("L1",10)
         distanceConst = 0
         
         effectiveConfidenceWhenChanging = 0.0
