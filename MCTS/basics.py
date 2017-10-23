@@ -180,5 +180,20 @@ def otherPixels(image, ps):
                   if (i,j) not in ps: ops.append((i,j))
     return ops
  
+ 
+############################################################
+#
+#  auxiliary functions
+#
+################################################################
     
     
+def plotHeatMap(z):
+    
+    import plotly.plotly as py
+    import plotly.graph_objs as go
+
+    print(z.shape)
+    trace = go.Heatmap(z)
+    data=[trace]
+    py.iplot(data, filename='basic-heatmap')

@@ -20,7 +20,10 @@ class re_training:
         self.originalModel = model 
         self.xtrain = []
         # temporary setting for classification
+        # the class the image should belong to 
         self.ytrain = []
+        # the class the image is misclassified into
+        self.ztrain = []
         # re-training parameters
         self.batch_size = 128
         self.nb_epoch = 12
@@ -33,13 +36,16 @@ class re_training:
         #self.originalModel.save_weights('%s/%s%s.h5'%(directory_model_string,dataset,ae), overwrite=True)
         #sio.savemat('%s/%s%s.mat'%(directory_model_string,dataset,ae), {'weights': self.originalModel.get_weights()})
 
-    def addDatum(self,xdata,ydata): 
+    def addDatum(self,xdata,ydata,newdata): 
         if len(xdata.shape) == 2:
             self.xtrain.append(np.expand_dims(xdata,axis=0))
             self.ytrain.append(ydata)
+            self.ztrain.append(newdata)
         else: 
             self.xtrain.append(xdata)
             self.ytrain.append(ydata)
+            self.ztrain.append(newdata)
+
             
     def addData(self,xdata,ydata): 
         self.xtrain += xdata 
@@ -130,3 +136,18 @@ class re_training:
         score = model.evaluate(X_test, Y_test, verbose=0, batch_size=batch_size)
         scoreReport = '%s %s'%(score,model.metrics_names)
         return scoreReport
+        
+    def saveToMat(self,path): 
+        import scipy.io as sio
+        data = []
+        label = []
+        for n in range(len(self.xtrain)): 
+            data.append(self.xtrain[n].flatten())
+            label.append(self.ztrain[n].flatten())
+        data = np.array(data)
+        label = np.array(label)
+        data_complete = {}
+        data_complete["X_test_adv"] = data
+        data_complete["L_test_adv"] = label
+        sio.savemat(path,data_complete)
+        

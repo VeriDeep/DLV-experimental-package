@@ -45,6 +45,9 @@ class mcts_twoPlayer:
         self.layer = layer
         self.manipulationType = "sift_twoPlayer"
         self.player_mode = player_mode
+        
+        self.collectImages = 1 
+        self.collectedImages = []
 
         self.cost = {}
         self.numberOfVisited = {}
@@ -76,6 +79,7 @@ class mcts_twoPlayer:
 
         # best case
         self.bestCase = (0,{},{})
+        self.numConverge = 0 
         
         # number of adversarial exmaples
         self.numAdv = 0
@@ -372,12 +376,17 @@ class mcts_twoPlayer:
             self.analyseAdv.addAdv(activations1)
             self.getUsefulPixels(self.accDims,self.d)
                 
-            self.re_training.addDatum(activations1,self.originalClass)
-            if self.bestCase[0] < dist: self.bestCase = (dist,self.spansPath,self.numSpansPath)
+            self.re_training.addDatum(activations1,self.originalClass,newClass)
+            if self.bestCase[0] < dist: 
+                self.numConverge += 1
+                self.bestCase = (dist,self.spansPath,self.numSpansPath)
+                path0="%s/%s_currentBest_%s.png"%(directory_pic_string,startIndexOfImage,self.numConverge)
+                dataBasics.save(-1,activations1,path0)
+
             return (self.depth == 0, dist)
         elif termByDist == True: 
             nprint("sampling a path ends by controlled search with self.depth %s ... "%self.depth)
-            self.re_training.addDatum(activations1,self.originalClass)
+            self.re_training.addDatum(activations1,self.originalClass,newClass)
             return (self.depth == 0, termValue)
         elif list(set(self.availableActionIDs[k])-set(self.usedActionIDs[k])) == []: 
             nprint("sampling a path ends with self.depth %s because no more actions can be taken ... "%self.depth)
