@@ -41,10 +41,13 @@ class mcts_twoPlayer:
         self.activations = activations
         self.model = model
         self.autoencoder = autoencoder
+
         # current layer
         self.layer = layer
         self.manipulationType = "sift_twoPlayer"
         self.player_mode = player_mode
+        
+        (self.originalClass,self.originalConfident) = self.predictWithActivations(self.activations)
         
         self.collectImages = 1 
         self.collectedImages = []
@@ -58,6 +61,9 @@ class mcts_twoPlayer:
         self.indexToNow = 0
         # current root node
         self.rootIndex = 0
+        
+        self.decisionTree = 0
+        self.re_training = re_training(model,self.image.shape)
         
         self.spans = {}
         self.numSpans = {}
@@ -88,10 +94,8 @@ class mcts_twoPlayer:
         # useless points
         self.usefulPixels = {}
         
-        (self.originalClass,self.originalConfident) = self.predictWithActivations(self.activations)
         
-        self.decisionTree = 0
-        self.re_training = re_training(model,self.image.shape)
+
         
         # temporary variables for sampling 
         self.spansPath = []
@@ -155,6 +159,9 @@ class mcts_twoPlayer:
         self.children[index] = []
         self.fullyExpanded[index] = False
         self.numberOfVisited[index] = 0    
+        activations1 = applyManipulation(self.activations,self.spans[index],self.numSpans[index])
+        self.re_training.addDatum(activations1,self.originalClass,self.originalClass)
+
 
     def destructor(self): 
         self.image = 0
